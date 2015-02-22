@@ -9,7 +9,11 @@ Ult. Modificacion el 22/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
-from arbolST import *
+def set_scope(target, scope):
+    if isinstance(target, Block):
+        target.scope.outer = scope
+    else:
+        target.scope = scope
 
 class Table:
 
@@ -19,21 +23,23 @@ class Table:
     def printValueIdented(self, value, level):
         print self.getIdent(level)* " " + str(value)
 
-class Simbolo(object):
 
-    def __init__(self, nombre, tipo, valor = None):
-        self.nombre = nombre
-        self.tipo = tipo
-        self.valor = valor
+class Simbolo(Table):
 
-    def printTable(self):
+    def __init__(self, name, dataType, value = None):
+        self.name = name
+        self.type = dataType
+        self.value = value
+
+    def printTable(self, level):
         if self.valor:
             valor = "| Value: " + str(self.valor)
         else
             valor = ""
 
-        return "Variable: " + self.nombre + "| Type: " + self.tipo\
-               + valor
+        string  = "Variable: " + self.name + "| Type: " + self.tipo
+        string += valor
+        self.printValueIdented(string, level)
 
 class tablaSimbolos(Table):
 
@@ -44,18 +50,39 @@ class tablaSimbolos(Table):
     def printTable(self, level):
         self.printValueIdented("SCOPE\n",level)
         for symbol in self.scope:
-            sym = self.scope[symbol]
-            self.printValueIdented(sym.printTable(),level + 1)
+            sym.printTable(level + 1)
+        self.printValueIdented("END_SCOPE\n",level)
 
 
-    def insert(self, value):
-        pass
+    def insert(self, variable, dataType):
+        if not self.is_local(variable):
+            self.scope[variable] = Simbolo(variable, dataType)
+        else:
+            return "Variable " + variable + " already in scope"
 
-    def delete(self, value):
-        pass
+    def delete(self, variable):
+        if variable in self.scope:
+            del self.scope[variable]
+        else:
+            print "No '" + key.name + "' in scope"
 
-    def update(self, value):
-        pass
+    def update(self, variable, dataType, value):
+        if self.is_member(variable):
+            if variable in self.scope:
+                symbol = self.scope[variable]
+
+                if dataType == symbol.dataType:
+                    symbol.value = value
+                    self.scope[variable] = symbol
+                    return True
+                else:
+                    print "SymTable.update: Different data types"
+                    return False
+            else:
+                return self.outer.update(variable, dataType, value)
+        else:
+            print "SymTable.update: No " + variable + " in scope"
+            return False
 
     def contains(self, value):
         pass
