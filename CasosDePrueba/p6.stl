@@ -1,0 +1,7 @@
+program {
+	using
+		int a,b,c;
+		bool esCasa, tengoHambre;
+		set q,w,e;
+	in
+}

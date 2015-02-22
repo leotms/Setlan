@@ -1,0 +1,10 @@
+program {
+	using 
+ 		int a,b,c;
+ 	in
+	print "Esto es un bloque de instrucciones";
+	x = 42;
+	print "Hola, soy print";
+	print "Hola, soy println";
+	println "hola mundo! :)", x, "otrostr :D";
+}
