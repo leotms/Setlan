@@ -251,7 +251,7 @@ def p_binary_operator_logical(symbol):
     symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3])
     
 ################################################################################
-#						     OPERADORES UNARIOS 					           # 
+#						     OPERADORES UNARIOS 			                   #
 ################################################################################
 
 #Operador unario numero negativo
@@ -278,36 +278,35 @@ def p_expresion_unary_set(symbol):
 precedence = (
 
     #Lenguaje
-     ("right", 'IF' ),
-     ("right", 'ELSE'),
-
-    #Operadores Aritmeticos
-     ("left", 'PLUS', 'MINUS'),
-     ("left", 'TIMES', 'DIVIDE', 'MODULE'),
-
-    #Operadores Comparativos
-     ("nonassoc", 'LESS', 'LESSEQ', 'GREAT', 'GREATEQ'),
-     ("nonassoc", 'EQUAL', 'UNEQUAL'),
-     ("nonassoc", 'CONTAINMENT'),
+     ("left",'RPARENTHESIS'),
 
     #Operadores Booleanos
      ("left", 'OR'),
      ("left", 'AND'),
      ("right", 'NOT'),
 
+    #Operadores Comparativos
+     ("nonassoc", 'LESS', 'LESSEQ', 'GREAT', 'GREATEQ'),
+     ("nonassoc", 'EQUAL', 'UNEQUAL'),
+     ("nonassoc", 'CONTAINMENT'),
+
     #Operadores sobre Conjuntos
-     ('left','UNION','DIFERENCE'),
-     ('left','INTERSECTION'),
+     ("left",'UNION','DIFERENCE'),
+     ("left",'INTERSECTION'),
+
+    #Operadores Aritmeticos
+     ("left", 'PLUS', 'MINUS'),
+     ("left", 'TIMES', 'DIVIDE', 'MODULE'),
 
     #Operadores unarios aritmeticos
      ("right",'UNARY_MINUS'),
 
     #Operadores entre Conjuntos-Aritmeticas
-     ('left','PLUSMAP','MINUSMAP'),
-     ('left','TIMESMAP','DIVIDEMAP','MODULEMAP'),
+     ("left",'PLUSMAP','MINUSMAP'),
+     ("left",'TIMESMAP','DIVIDEMAP','MODULEMAP'),
 
     #Operadores unarios sobre conjuntos
-     ('nonassoc','MAXVALUE','MINVALUE','NUMELEMENTS'),
+     ("right",'MAXVALUE','MINVALUE','NUMELEMENTS'),
 )
  
 ################################################################################
