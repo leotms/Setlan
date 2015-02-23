@@ -256,7 +256,7 @@ class Parenthesis(Expression):
 
     def printTree(self,level):
         self.printValueIdented(self.type, level)
-        self.exp.printValueIdented(level + 1)
+        self.exp.printTree(level + 1)
 
 # Clase de Conjunto
 class Set(Expression):
