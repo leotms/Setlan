@@ -24,7 +24,7 @@ def p_program(symbol):
 	symbol[0] = Program(symbol[2])
 
 ################################################################################
-#                                  VACIO                                       # 
+#                                  VACIO                                       #
 ################################################################################
 
 def p_vacio(symbol):
@@ -32,7 +32,7 @@ def p_vacio(symbol):
     pass
 
 ################################################################################
-#							   INSTRUCCIONES    					           # 
+#							   INSTRUCCIONES    					           #
 ################################################################################
 
 # Regla para la asignacion a variables.
@@ -58,13 +58,14 @@ def p_instruccion_scan(symbol):
     symbol[0] = Scan(Identifier(symbol[2]))
 
 ################################################################################
-#						    INSTRUCCION DE BLOQUE  					           # 
+#						    INSTRUCCION DE BLOQUE  					           #
 ################################################################################
 
 # Regla para los bloques de instrucciones.
 def p_instruccion_block(symbol):
     """instruccion : OPENCURLY vacio CLOSECURLY
                    | OPENCURLY lista_instrucciones CLOSECURLY
+                   | OPENCURLY declaracion vacio CLOSECURLY
                    | OPENCURLY declaracion lista_instrucciones CLOSECURLY"""
     if len(symbol) <= 4:
         symbol[0] = Block(symbol[2])
@@ -198,7 +199,7 @@ def p_expresion_set(symbol):
     symbol[0] = Set(symbol[2])
 
 ################################################################################
-#							   TIPOS DE DATO   						           # 
+#							   TIPOS DE DATO   						           #
 ################################################################################
 
 # Tipos de datos permitidos para las variables.
