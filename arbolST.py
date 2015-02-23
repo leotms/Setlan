@@ -9,43 +9,55 @@ Ult. Modificacion el 09/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
+from tablaSimbolos import *
+
 # Clase Expression. Provee metodos para la impresion 
 # de todas las expresiones. 
 class Expression:
-	pass
+    pass
 
-	def getIdent(self,level):
-		return level * 4
+    def getIdent(self,level):
+        return level * 4
 
-	def printValueIdented(self, value, level):
-		print self.getIdent(level)* " " + str(value)
+    def printValueIdented(self, value, level):
+        print self.getIdent(level)* " " + str(value)
 
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
 
-	def __init__(self, statement):
-		self.type      = "PROGRAM"
-		self.statement = statement
+    def __init__(self, statement):
+        self.type      = "PROGRAM"
+        self.statement = statement
+        self.symTable  = tablaSimbolos()
 
-	def printTree(self, level):
-		self.printValueIdented(self.type, level)
-		self.statement.printTree(level+1)
+    def printTree(self, level):
+        self.printValueIdented(self.type, level)
+        self.statement.printTree(level+1)
+
+    def check(self):
+        scope(self.statement,self.symTable)
+        # if self.statement.check():
+        #     return self.symTable
+        # else:
+        #     return None
+        self.statement.check()
+        return self.symTable
 
 class Assign(Expression):
 
-	def __init__(self, leftIdent, rightExp):
-		self.type = "ASSIGN"
-		self.leftIdent = leftIdent
-		self.rightExp  = rightExp
+    def __init__(self, leftIdent, rightExp):
+        self.type = "ASSIGN"
+        self.leftIdent = leftIdent
+        self.rightExp  = rightExp
 
-	def printTree(self,level):
-		self.printValueIdented(self.type, level)
-		#Impresion del identificador asignado
-		self.printValueIdented("IDENTIFIER", level + 1)
-		self.leftIdent.printTree(level + 2)
-		#Impresion de la expresion asignada
-		self.printValueIdented("VALUE", level + 1)
-		self.rightExp.printTree(level + 2)
+    def printTree(self,level):
+        self.printValueIdented(self.type, level)
+        #Impresion del identificador asignado
+        self.printValueIdented("IDENTIFIER", level + 1)
+        self.leftIdent.printTree(level + 2)
+        #Impresion de la expresion asignada
+        self.printValueIdented("VALUE", level + 1)
+        self.rightExp.printTree(level + 2)
 
 class Print(Expression):
  
@@ -71,10 +83,11 @@ class Scan(Expression):
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
   
-    def __init__(self, list_inst, declaraciones =  None):
+    def __init__(self, list_inst, declaraciones =  None, scope = tablaSimbolos()):
         self.type      = "BLOCK"
         self.list_inst = list_inst
         self.declaraciones = declaraciones
+        self.scope = scope
   
     def printTree(self,level):
         self.printValueIdented(self.type,level)
@@ -88,6 +101,16 @@ class Block(Expression):
                 inst.printTree(level + 1)
       
         self.printValueIdented("BLOCK_END", level)
+
+    def check(self):
+        boolean = True
+        if self.declaraciones:
+            for declaration in self.declaraciones:
+                scope(declaration, self.symTable)
+                if not declaration.check():
+                    boolean = false
+
+        return boolean
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -103,6 +126,17 @@ class Using(Expression):
             declaration.printTree(level)
         self.printValueIdented("IN", level)
 
+    def check(self):
+        boolean = True
+        if self.list_declare:
+            for declaration in self.list_declare:
+                scope(declaration, self.symTable)
+                if not declaration.check():
+                    boolean = False
+
+        return boolean
+
+
 class Declaration(Expression):
  
     def __init__(self, decType, list_id):
@@ -113,6 +147,16 @@ class Declaration(Expression):
         self.type.printTree(level)
         for identifier in self.list_id:
             self.printValueIdented(identifier, level + 2)
+
+    def check(self):
+        if self.list_id:
+            declaration_table = tablaSimbolos()
+            for identifier in self.list_id:
+                declaration_table.insert(decType, identifier)
+            scope(self.scope, declaration_table)
+            return True
+        else:
+            return False
 
 class If(Expression):   
     
@@ -220,23 +264,23 @@ class Number(Expression):
 
 class String(Expression):
 
-	def __init__(self, string):
-		self.type   = "STRING"
-		self.string = string
+    def __init__(self, string):
+        self.type   = "STRING"
+        self.string = string
 
-	def printTree(self, level):
-		self.printValueIdented(self.type, level)
-		self.printValueIdented(self.string, level + 1)
+    def printTree(self, level):
+        self.printValueIdented(self.type, level)
+        self.printValueIdented(self.string, level + 1)
 
 class Identifier(Expression):
 
-	def __init__(self, identifier):
-		self.type       = "VARIABLE"
-		self.identifier = identifier
+    def __init__(self, identifier):
+        self.type       = "VARIABLE"
+        self.identifier = identifier
 
-	def printTree(self, level):
-		self.printValueIdented(self.type, level)
-		self.printValueIdented(self.identifier, level + 1)
+    def printTree(self, level):
+        self.printValueIdented(self.type, level)
+        self.printValueIdented(self.identifier, level + 1)
 
 class Bool(Expression):
     

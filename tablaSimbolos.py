@@ -9,11 +9,11 @@ Ult. Modificacion el 22/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
-def set_scope(target, scope):
+def scope(target, scope):
     if isinstance(target, Block):
-        target.scope.outer = scope
+        target.symTable.outer = scope
     else:
-        target.scope = scope
+        target.symTable = scope
 
 class Table:
 
@@ -34,7 +34,7 @@ class Simbolo(Table):
     def printTable(self, level):
         if self.valor:
             valor = "| Value: " + str(self.valor)
-        else
+        else:
             valor = ""
 
         string  = "Variable: " + self.name + "| Type: " + self.tipo
@@ -55,19 +55,19 @@ class tablaSimbolos(Table):
 
 
     def insert(self, variable, dataType):
-        if not self.is_local(variable):
+        if not self.contains(variable):
             self.scope[variable] = Simbolo(variable, dataType)
         else:
             return "Variable " + variable + " already in scope"
 
     def delete(self, variable):
-        if variable in self.scope:
+        if self.contains(variable):
             del self.scope[variable]
         else:
-            print "No '" + key.name + "' in scope"
+            print "No '" + variable+ "' in scope"
 
     def update(self, variable, dataType, value):
-        if self.is_member(variable):
+        if self.contains(variable):
             if variable in self.scope:
                 symbol = self.scope[variable]
 
@@ -84,8 +84,10 @@ class tablaSimbolos(Table):
             print "SymTable.update: No " + variable + " in scope"
             return False
 
-    def contains(self, value):
-        pass
+    def contains(self, variable):
+        if self.scope:
+            return (variable in self.scope)
 
     def lookup(self, value):
         pass
+
