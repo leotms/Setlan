@@ -9,12 +9,6 @@ Ult. Modificacion el 22/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
-def scope(target, scope):
-    if isinstance(target, Block):
-        target.symTable.outer = scope
-    else:
-        target.symTable = scope
-
 class Table:
 
     def getIdent(self,level):
@@ -32,39 +26,45 @@ class Simbolo(Table):
         self.value = value
 
     def printTable(self, level):
-        if self.valor:
-            valor = "| Value: " + str(self.valor)
+        if self.value:
+            valor = "| Value: " + str(self.value)
         else:
             valor = ""
 
-        string  = "Variable: " + self.name + "| Type: " + self.tipo
+        string  = "Variable: " + str(self.name) 
+        string += " | Type: " + str(self.type)
         string += valor
         self.printValueIdented(string, level)
 
 class tablaSimbolos(Table):
 
     def __init__(self):
-        self.scope = {}
-        self.outer = None
+        self.scope  = {}
+        self.outer  = None
+        self.errors = []
 
     def printTable(self, level):
         self.printValueIdented("SCOPE\n",level)
         for symbol in self.scope:
-            sym.printTable(level + 1)
+            self.scope[symbol].printTable(level + 1)
         self.printValueIdented("END_SCOPE\n",level)
+        if self.outer:
+            self.outer.printTable(level + 1)
 
 
     def insert(self, variable, dataType):
         if not self.contains(variable):
             self.scope[variable] = Simbolo(variable, dataType)
         else:
-            return "Variable " + variable + " already in scope"
+            string = "Variable " + str(variable) + " already in scope"
+            self.error(string)
 
     def delete(self, variable):
         if self.contains(variable):
             del self.scope[variable]
         else:
-            print "No '" + variable+ "' in scope"
+            string ="No '" + variable+ "' in scope"
+            self.error(string)
 
     def update(self, variable, dataType, value):
         if self.contains(variable):
@@ -76,7 +76,8 @@ class tablaSimbolos(Table):
                     self.scope[variable] = symbol
                     return True
                 else:
-                    print "SymTable.update: Different data types"
+                    string = "SymTable.update: Different data types"
+                    self.error.append(string)
                     return False
             else:
                 return self.outer.update(variable, dataType, value)
@@ -86,8 +87,15 @@ class tablaSimbolos(Table):
 
     def contains(self, variable):
         if self.scope:
-            return (variable in self.scope)
+            print(str(self.scope))
+            if variable in self.scope:
+                return True
+        else:
+            return False
 
     def lookup(self, value):
         pass
 
+
+    def error(self, mensaje):
+        self.errors.append(mensaje)

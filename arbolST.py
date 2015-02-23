@@ -11,6 +11,15 @@ Ult. Modificacion el 09/02/2015
 
 from tablaSimbolos import *
 
+def scope(target, scope):
+    #print("holis")
+    if isinstance(target, Block):
+        target.symTable.scope = scope.scope
+        target.symTable.outer = scope
+    else:
+        print(isinstance(target, Block))
+        target.symTable = scope
+
 # Clase Expression. Provee metodos para la impresion 
 # de todas las expresiones. 
 class Expression:
@@ -28,20 +37,21 @@ class Program(Expression):
     def __init__(self, statement):
         self.type      = "PROGRAM"
         self.statement = statement
-        self.symTable  = tablaSimbolos()
 
     def printTree(self, level):
         self.printValueIdented(self.type, level)
         self.statement.printTree(level+1)
 
-    def check(self):
-        scope(self.statement,self.symTable)
+    def check(self, symTable):
+        scope(self.statement, symTable)
         # if self.statement.check():
         #     return self.symTable
         # else:
         #     return None
-        self.statement.check()
-        return self.symTable
+        if self.statement.check(symTable):
+            return symTable
+        else:
+            return False
 
 class Assign(Expression):
 
@@ -58,6 +68,10 @@ class Assign(Expression):
         #Impresion de la expresion asignada
         self.printValueIdented("VALUE", level + 1)
         self.rightExp.printTree(level + 2)
+
+    def check(self, symTable):
+        pass
+
 
 class Print(Expression):
  
@@ -87,7 +101,7 @@ class Block(Expression):
         self.type      = "BLOCK"
         self.list_inst = list_inst
         self.declaraciones = declaraciones
-        self.scope = scope
+        self.symTable = scope
   
     def printTree(self,level):
         self.printValueIdented(self.type,level)
@@ -102,22 +116,18 @@ class Block(Expression):
       
         self.printValueIdented("BLOCK_END", level)
 
-    def check(self):
-        boolean = True
+    def check(self,symTable):
         if self.declaraciones:
-            for declaration in self.declaraciones:
-                scope(declaration, self.symTable)
-                if not declaration.check():
-                    boolean = false
-
-        return boolean
+            scope(self.declaraciones, self.symTable)
+            return self.declaraciones.check(symTable)
  
 #Clase para las declaraciones
 class Using(Expression):
  
-    def __init__(self, list_declare):
+    def __init__(self, list_declare, scope = tablaSimbolos()):
         self.type         = "USING"
         self.list_declare = list_declare
+        self.symTable     = scope
  
     def printTree(self,level):
         self.printValueIdented(self.type, level)
@@ -126,12 +136,12 @@ class Using(Expression):
             declaration.printTree(level)
         self.printValueIdented("IN", level)
 
-    def check(self):
+    def check(self,symTable):
         boolean = True
         if self.list_declare:
             for declaration in self.list_declare:
                 scope(declaration, self.symTable)
-                if not declaration.check():
+                if not declaration.check(symTable):
                     boolean = False
 
         return boolean
@@ -139,21 +149,24 @@ class Using(Expression):
 
 class Declaration(Expression):
  
-    def __init__(self, decType, list_id):
-        self.type = decType
-        self.list_id = list_id
+    def __init__(self, decType, list_id, scope = tablaSimbolos()):
+        self.type       = decType
+        self.list_id    = list_id
+        self.symTable   = scope
  
     def printTree(self, level):
         self.type.printTree(level)
         for identifier in self.list_id:
             self.printValueIdented(identifier, level + 2)
 
-    def check(self):
+    def check(self,symTable):
         if self.list_id:
             declaration_table = tablaSimbolos()
+            scope(self.symTable, declaration_table)
             for identifier in self.list_id:
-                declaration_table.insert(decType, identifier)
-            scope(self.scope, declaration_table)
+                #print(identifier)
+                self.symTable.insert(identifier, self.type)
+            #declaration_table.printTable(1)
             return True
         else:
             return False
@@ -320,6 +333,9 @@ class Type(Expression):
 
     def __init__(self, typeName):
         self.type = typeName
+
+    def __str__(self):
+        return self.type
  
     def printTree(self,level):
         self.printValueIdented(self.type, level + 1)

@@ -9,6 +9,7 @@ Creado el 22/1/2015
 '''
 
 import parser
+import tablaSimbolos
 import sys
 
 if __name__ == '__main__':
@@ -37,4 +38,12 @@ if __name__ == '__main__':
             print parser.parser_errorList[0]
 
         else:
-            arbol.printTree(0)
+            #arbol.printTree(0)
+            #Inicializamos la tabla de simbolos
+            tablaSimbolos = tablaSimbolos.tablaSimbolos()
+            #Creamos la tabla de simbolos.
+            tablaSimbolos = arbol.check(tablaSimbolos)
+            #Se imprime la tabla
+            tablaSimbolos.printTable(0)
+            for error in tablaSimbolos.errors:
+                print error

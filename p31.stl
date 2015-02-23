@@ -1,5 +1,9 @@
 program {
 	using
 		int a, b;
+		bool pero, quiero, comer;
 	in
+
+	a = 2;
+	b = 3;
 }
