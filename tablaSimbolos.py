@@ -37,63 +37,78 @@ class Simbolo(object):
 class tablaSimbolos(Table):
 
     def __init__(self):
-        self.actual  = {}
-        self.parent  = None
-        self.errors  = []
+        self.actual   = {}
+        self.children = []
+        self.parent   = None
+        self.errors   = []
 
     def printTable(self, level):
         self.printValueIdented("SCOPE\n",level)
-        for symbol in self.scope:
-            self.scope[symbol].printTable(level + 1)
+        if self.children:
+        	for child in self.children:
+        		child.printTable(level+1)
+        else:
+        	for symbol in self.actual:
+            	self.actual[symbol].printTable(level + 1)
         self.printValueIdented("END_SCOPE\n",level)
-        if self.outer:
-            self.outer.printTable(level + 1)
 
 
     def insert(self, variable, dataType):
         if not self.contains(variable):
-            self.scope[variable] = Simbolo(variable, dataType)
+            self.actual[variable] = Simbolo(variable, dataType)
         else:
-            string = "Variable " + str(variable) + " already in scope"
+            string = "Variable " + str(variable) + " already defined."
             self.error(string)
 
     def delete(self, variable):
         if self.contains(variable):
-            del self.scope[variable]
+            del self.actual[variable]
         else:
-            string ="No '" + variable+ "' in scope"
+            string ="Variable '" + variable+ "' not defined."
             self.error(string)
 
     def update(self, variable, dataType, value):
         if self.contains(variable):
-            if variable in self.scope:
-                symbol = self.scope[variable]
+            if variable in self.actual:
+                symbol = self.actual[variable]
 
                 if dataType == symbol.dataType:
                     symbol.value = value
-                    self.scope[variable] = symbol
+                    self.actual[variable] = symbol
                     return True
                 else:
-                    string = "SymTable.update: Different data types"
+                    string = "SymTable.update: Different data types."
                     self.error.append(string)
                     return False
             else:
-                return self.outer.update(variable, dataType, value)
+                return self.parent.update(variable, dataType, value)
         else:
-            print "SymTable.update: No " + variable + " in scope"
+            print "SymTable.update: variable '" + variable + "' not defined."
             return False
 
     def contains(self, variable):
-        if self.scope:
-            print(str(self.scope))
-            if variable in self.scope:
+        if self.actual:
+            if variable in self.actual:
                 return True
         else:
             return False
 
-    def lookup(self, value):
-        pass
+    def inContext(self, variable):
+    	if self.actual:
+    		if variable in self.actual:
+    			return True
+    	else if self.parent:
+    		return self.parent.inContext(variable)
+    	else:
+    		return False
 
+    def lookup(self, value):
+    	if self.actual:
+    		if variable in self.actual:
+    			return self.actual[variable]
+    	else if self.parent:
+    		return self.parent.lookup(variable)
+    	return "Variable " + variable + " not in context."
 
     def error(self, mensaje):
         self.errors.append(mensaje)
