@@ -12,44 +12,34 @@ Ult. Modificacion el 22/02/2015
 
 class Simbolo(object):
 
-	def __init__(self, nombre, tipo, valor = None):
-		self.nombre = nombre
-		self.tipo = tipo
-		self.valor = valor
+	global symbol_default
+	symbol_default = {
+		'INT' : 0,
+		'BOOL': 'false',
+		'SET' : '{}'
+	}
 
-	def __str__(self):
-		if self.valor:
-			valor = "| Value: " + str(self.valor)
-		else
-			valor = ""
+	def __init__(self, name, type, value = None):
+		self.name = name
+		self.type = type
+		# Colocamos el valor por defecto
+		if value == None:
+			self.value = symbol_default[type]
+		else:
+			self.value = value
 
-		return "Variable: " + self.nombre + "| Type: " + self.tipo\
-		       + valor
-
-class Simbolo(Table):
-
-    def __init__(self, name, dataType, value = None):
-        self.name = name
-        self.type = dataType
-        self.value = value
-
-    def printTable(self, level):
-        if self.value:
-            valor = "| Value: " + str(self.value)
-        else:
-            valor = ""
-
-        string  = "Variable: " + str(self.name) 
-        string += " | Type: " + str(self.type)
-        string += valor
-        self.printValueIdented(string, level)
+	def printTable(self, level):
+		string  = "Variable: " + self.name
+		string += " | Type: "   + self.type
+		string += " | Value: " + str(self.value)
+		self.printValueIdented(string, level)
 
 class tablaSimbolos(Table):
 
     def __init__(self):
-        self.scope  = {}
-        self.outer  = None
-        self.errors = []
+        self.actual  = {}
+        self.parent  = None
+        self.errors  = []
 
     def printTable(self, level):
         self.printValueIdented("SCOPE\n",level)
