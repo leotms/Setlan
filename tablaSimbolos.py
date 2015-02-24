@@ -15,14 +15,14 @@ def getIdent(level):
 
 def printValueIdented(value, level):
 	print getIdent(level)* " " + str(value)
-	
+
 class Simbolo(object):
 
 	global symbol_default
 	symbol_default = {
-		'INT' : 0,
-		'BOOL': 'false',
-		'SET' : '{}'
+		'int' : 0,
+		'bool': 'false',
+		'set' : '{}'
 	}
 
 	def __init__(self, name, type, value = None):
@@ -40,7 +40,7 @@ class Simbolo(object):
 		string += " | Value: " + str(self.value)
 		printValueIdented(string, level)
 
-class tablaSimbolos(Table):
+class tablaSimbolos(object):
 
     def __init__(self):
         self.actual   = {}
@@ -103,7 +103,7 @@ class tablaSimbolos(Table):
     	if self.actual:
     		if variable in self.actual:
     			return True
-    	else if self.parent:
+    	elif self.parent:
     		return self.parent.inContext(variable)
     	else:
     		return False
@@ -112,7 +112,7 @@ class tablaSimbolos(Table):
     	if self.actual:
     		if variable in self.actual:
     			return self.actual[variable]
-    	else if self.parent:
+    	elif self.parent:
     		return self.parent.lookup(variable)
     	return "Variable " + variable + " not in context."
 

@@ -9,6 +9,8 @@ Ult. Modificacion el 09/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
+from tablaSimbolos import *
+
 #Para establecer el alcance de las variables
 def setParents(newObject, table):
     if isinstance(newObject, Block):
@@ -16,38 +18,48 @@ def setParents(newObject, table):
         table.children.append(newObject.symTable)
     else:
         newObject.symTable = table
+        table.children.append(newObject.symTable)
 
 
 # Clase Expression. Usada para la herencia
 class Expression:
-	pass
+    pass
 
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
 
-	def __init__(self, statement):
-		self.type      = "PROGRAM"
-		self.statement = statement
+    def __init__(self, statement):
+        self.type      = "PROGRAM"
+        self.statement = statement
+        self.symTable  = tablaSimbolos()
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		self.statement.printTree(level+1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        self.statement.printTree(level+1)
+
+    def checkType(self):
+        setParents(self.statement, self.symTable)
+        if self.statement.checkType():
+            return self.symTable
 
 class Assign(Expression):
 
-	def __init__(self, leftIdent, rightExp):
-		self.type = "ASSIGN"
-		self.leftIdent = leftIdent
-		self.rightExp  = rightExp
+    def __init__(self, leftIdent, rightExp):
+        self.type = "ASSIGN"
+        self.leftIdent = leftIdent
+        self.rightExp  = rightExp
 
-	def printTree(self,level):
-		printValueIdented(self.type, level)
-		#Impresion del identificador asignado
-		printValueIdented("IDENTIFIER", level + 1)
-		self.leftIdent.printTree(level + 2)
-		#Impresion de la expresion asignada
-		printValueIdented("VALUE", level + 1)
-		self.rightExp.printTree(level + 2)
+    def printTree(self,level):
+        printValueIdented(self.type, level)
+        #Impresion del identificador asignado
+        printValueIdented("IDENTIFIER", level + 1)
+        self.leftIdent.printTree(level + 2)
+        #Impresion de la expresion asignada
+        printValueIdented("VALUE", level + 1)
+        self.rightExp.printTree(level + 2)
+
+    def checkType(self):
+        pass
 
 class Print(Expression):
  
@@ -60,6 +72,9 @@ class Print(Expression):
         for element in self.elements:
             element.printTree(level + 1)
 
+    def checkType(self):
+        pass
+
 class Scan(Expression):
     
     def __init__(self, identifier):
@@ -70,13 +85,17 @@ class Scan(Expression):
         printValueIdented(self.type,level)
         self.value.printTree(level + 1)
 
+    def checkType(self):
+        pass
+
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
   
     def __init__(self, list_inst, declaraciones =  None):
-        self.type      = "BLOCK"
-        self.list_inst = list_inst
+        self.type          = "BLOCK"
+        self.list_inst     = list_inst
         self.declaraciones = declaraciones
+        self.symTable      = tablaSimbolos()
   
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -90,6 +109,11 @@ class Block(Expression):
                 inst.printTree(level + 1)
       
         printValueIdented("BLOCK_END", level)
+
+    def checkType(self):
+        if self.declaraciones:
+            setParents(self.declaraciones, self.symTable)
+            return self.declaraciones.checkType()
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -97,6 +121,7 @@ class Using(Expression):
     def __init__(self, list_declare):
         self.type         = "USING"
         self.list_declare = list_declare
+        self.symTable     = tablaSimbolos()
  
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -105,16 +130,32 @@ class Using(Expression):
             declaration.printTree(level)
         printValueIdented("IN", level)
 
+    def checkType(self):
+        boolean = True
+        for declaration in self.list_declare:
+            setParents(declaration, self.symTable)
+            if not declaration.checkType():
+                boolean = False
+        return boolean
+
 class Declaration(Expression):
  
     def __init__(self, decType, list_id):
         self.type = decType
         self.list_id = list_id
+        self.symTable = tablaSimbolos()
  
     def printTree(self, level):
         self.type.printTree(level)
         for identifier in self.list_id:
             printValueIdented(identifier, level + 2)
+
+    def checkType(self):
+        new_ids = tablaSimbolos()
+        for identifier in self.list_id:
+            new_ids.insert(identifier, self.type.type)
+        setParents(self.symTable, new_ids)
+        return True
 
 class If(Expression):   
     
@@ -222,23 +263,23 @@ class Number(Expression):
 
 class String(Expression):
 
-	def __init__(self, string):
-		self.type   = "STRING"
-		self.string = string
+    def __init__(self, string):
+        self.type   = "STRING"
+        self.string = string
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		printValueIdented(self.string, level + 1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        printValueIdented(self.string, level + 1)
 
 class Identifier(Expression):
 
-	def __init__(self, identifier):
-		self.type       = "VARIABLE"
-		self.identifier = identifier
+    def __init__(self, identifier):
+        self.type       = "VARIABLE"
+        self.identifier = identifier
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		printValueIdented(self.identifier, level + 1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        printValueIdented(self.identifier, level + 1)
 
 class Bool(Expression):
     
