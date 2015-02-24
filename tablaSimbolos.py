@@ -49,7 +49,7 @@ class tablaSimbolos(object):
         self.errors   = []
 
     def printTable(self, level):
-        printValueIdented("SCOPE\n",level)
+        printValueIdented("SCOPE",level)
         for symbol in self.actual:
            	self.actual[symbol].printTable(level + 1)
         if self.children:

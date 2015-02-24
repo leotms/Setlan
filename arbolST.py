@@ -12,12 +12,13 @@ Ult. Modificacion el 09/02/2015
 from tablaSimbolos import *
 
 #Para establecer el alcance de las variables
-def setParents(newObject, table):
+def empile(newObject, table):
     if isinstance(newObject, Block):
-        newObject.symTable.parent = table
-        table.children.append(newObject.symTable)
+        newObject.symTable = table
+         #table.children.append(newObject.symTable)
     else:
         newObject.symTable = table
+        #table.children.append(newObject.symTable)
         #table.children.append(newObject.symTable)
 
 
@@ -38,7 +39,7 @@ class Program(Expression):
         self.statement.printTree(level+1)
 
     def checkType(self):
-        setParents(self.statement, self.symTable)
+        empile(self.statement, self.symTable)
         if self.statement.checkType():
             return self.symTable
 
@@ -112,7 +113,7 @@ class Block(Expression):
 
     def checkType(self):
         if self.declaraciones:
-            setParents(self.declaraciones, self.symTable)
+            empile(self.declaraciones, self.symTable)
             return self.declaraciones.checkType()
  
 #Clase para las declaraciones
@@ -133,7 +134,7 @@ class Using(Expression):
     def checkType(self):
         boolean = True
         for declaration in self.list_declare:
-            setParents(declaration, self.symTable)
+            empile(declaration, self.symTable)
             if not declaration.checkType():
                 boolean = False
         return boolean
@@ -151,11 +152,11 @@ class Declaration(Expression):
             printValueIdented(identifier, level + 2)
 
     def checkType(self):
-        new_ids = tablaSimbolos()
+        #new_ids = tablaSimbolos()
         for identifier in self.list_id:
-            new_ids.insert(identifier, self.type.type)
-        new_ids.printTable(1)
-        setParents(self.symTable, new_ids)
+            self.symTable.insert(identifier, self.type.type)
+            #new_ids.printTable(1)
+            #empile(self.symTable, new_ids)
         return True
 
 class If(Expression):   
