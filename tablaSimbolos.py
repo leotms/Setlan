@@ -9,7 +9,13 @@ Ult. Modificacion el 22/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
+#Funciones utiles:
+def getIdent(level):
+	return level * 4
 
+def printValueIdented(value, level):
+	print getIdent(level)* " " + str(value)
+	
 class Simbolo(object):
 
 	global symbol_default
@@ -32,7 +38,7 @@ class Simbolo(object):
 		string  = "Variable: " + self.name
 		string += " | Type: "   + self.type
 		string += " | Value: " + str(self.value)
-		self.printValueIdented(string, level)
+		printValueIdented(string, level)
 
 class tablaSimbolos(Table):
 
@@ -43,14 +49,14 @@ class tablaSimbolos(Table):
         self.errors   = []
 
     def printTable(self, level):
-        self.printValueIdented("SCOPE\n",level)
+        printValueIdented("SCOPE\n",level)
+        for symbol in self.actual:
+           	self.actual[symbol].printTable(level + 1)
         if self.children:
         	for child in self.children:
         		child.printTable(level+1)
-        else:
-        	for symbol in self.actual:
-            	self.actual[symbol].printTable(level + 1)
-        self.printValueIdented("END_SCOPE\n",level)
+
+        printValueIdented("END_SCOPE\n",level)
 
 
     def insert(self, variable, dataType):

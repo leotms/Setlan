@@ -9,16 +9,18 @@ Ult. Modificacion el 09/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
-# Clase Expression. Provee metodos para la impresion 
-# de todas las expresiones. 
+#Para establecer el alcance de las variables
+def setParents(newObject, table):
+    if isinstance(newObject, Block):
+        newObject.symTable.parent = table
+        table.children.append(newObject.symTable)
+    else:
+        newObject.symTable = table
+
+
+# Clase Expression. Usada para la herencia
 class Expression:
 	pass
-
-	def getIdent(self,level):
-		return level * 4
-
-	def printValueIdented(self, value, level):
-		print self.getIdent(level)* " " + str(value)
 
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
@@ -28,7 +30,7 @@ class Program(Expression):
 		self.statement = statement
 
 	def printTree(self, level):
-		self.printValueIdented(self.type, level)
+		printValueIdented(self.type, level)
 		self.statement.printTree(level+1)
 
 class Assign(Expression):
@@ -39,12 +41,12 @@ class Assign(Expression):
 		self.rightExp  = rightExp
 
 	def printTree(self,level):
-		self.printValueIdented(self.type, level)
+		printValueIdented(self.type, level)
 		#Impresion del identificador asignado
-		self.printValueIdented("IDENTIFIER", level + 1)
+		printValueIdented("IDENTIFIER", level + 1)
 		self.leftIdent.printTree(level + 2)
 		#Impresion de la expresion asignada
-		self.printValueIdented("VALUE", level + 1)
+		printValueIdented("VALUE", level + 1)
 		self.rightExp.printTree(level + 2)
 
 class Print(Expression):
@@ -54,7 +56,7 @@ class Print(Expression):
         self.elements = elements
  
     def printTree(self, level):
-        self.printValueIdented(self.type,level)
+        printValueIdented(self.type,level)
         for element in self.elements:
             element.printTree(level + 1)
 
@@ -65,7 +67,7 @@ class Scan(Expression):
         self.value = identifier
 
     def printTree(self,level):
-        self.printValueIdented(self.type,level)
+        printValueIdented(self.type,level)
         self.value.printTree(level + 1)
 
 #Un bloque es una secuencia de Expresiones
@@ -77,7 +79,7 @@ class Block(Expression):
         self.declaraciones = declaraciones
   
     def printTree(self,level):
-        self.printValueIdented(self.type,level)
+        printValueIdented(self.type,level)
         
         #Imprimimos la lista de declaraciones, si existe
         if self.declaraciones:
@@ -87,7 +89,7 @@ class Block(Expression):
             for inst in self.list_inst:
                 inst.printTree(level + 1)
       
-        self.printValueIdented("BLOCK_END", level)
+        printValueIdented("BLOCK_END", level)
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -97,11 +99,11 @@ class Using(Expression):
         self.list_declare = list_declare
  
     def printTree(self,level):
-        self.printValueIdented(self.type, level)
+        printValueIdented(self.type, level)
         #Se imprimen todas las declaraciones
         for declaration in self.list_declare:
             declaration.printTree(level)
-        self.printValueIdented("IN", level)
+        printValueIdented("IN", level)
 
 class Declaration(Expression):
  
@@ -112,7 +114,7 @@ class Declaration(Expression):
     def printTree(self, level):
         self.type.printTree(level)
         for identifier in self.list_id:
-            self.printValueIdented(identifier, level + 2)
+            printValueIdented(identifier, level + 2)
 
 class If(Expression):   
     
@@ -123,16 +125,16 @@ class If(Expression):
         self.inst_else = inst_else 
 
     def printTree(self,level):
-        self.printValueIdented(self.type,level)
-        self.printValueIdented("condition",level + 1)
+        printValueIdented(self.type,level)
+        printValueIdented("condition",level + 1)
         self.condition.printTree(level + 2)
-        self.printValueIdented('THEN',level + 1)
+        printValueIdented('THEN',level + 1)
         self.inst_if.printTree(level + 2)
 
         if self.inst_else is not None:
-            self.printValueIdented('ELSE',level)
+            printValueIdented('ELSE',level)
             self.inst_else.printTree(level +1)
-        self.printValueIdented('END_IF',level)
+        printValueIdented('END_IF',level)
 
 class For(Expression):
     
@@ -144,14 +146,14 @@ class For(Expression):
         self.inst       = inst
 
     def printTree(self,level):
-        self.printValueIdented(self.type,level)
+        printValueIdented(self.type,level)
         self.identifier.printTree(level + 1)
         self.direction.printTree(level + 1)
-        self.printValueIdented('IN',level + 1)
+        printValueIdented('IN',level + 1)
         self.expre.printTree(level + 1)
-        self.printValueIdented('DO',level + 1)
+        printValueIdented('DO',level + 1)
         self.inst.printTree(level + 2)
-        self.printValueIdented('END_FOR',level)
+        printValueIdented('END_FOR',level)
 
 class Direction(Expression):
     
@@ -160,8 +162,8 @@ class Direction(Expression):
         self.value = value
 
     def printTree(self,level):
-        self.printValueIdented(self.type, level)
-        self.printValueIdented(self.value,level + 1)
+        printValueIdented(self.type, level)
+        printValueIdented(self.value,level + 1)
 
 class RepeatWhileDo(Expression):
     
@@ -172,12 +174,12 @@ class RepeatWhileDo(Expression):
         self.inst2 = inst2
 
     def printTree(self,level):
-        self.printValueIdented(self.type,level)
+        printValueIdented(self.type,level)
         self.inst1.printTree(level + 1)
-        self.printValueIdented('WHILE',level)
-        self.printValueIdented('condition', level + 1)
+        printValueIdented('WHILE',level)
+        printValueIdented('condition', level + 1)
         self.expre.printTree(level + 2)
-        self.printValueIdented('DO',level)
+        printValueIdented('DO',level)
         self.inst2.printTree(level + 1)
 
 class WhileDo(Expression):
@@ -188,12 +190,12 @@ class WhileDo(Expression):
         self.inst  = inst
     
     def printTree(self, level):
-        self.printValueIdented(self.type,level)
-        self.printValueIdented('condition',level + 1)
+        printValueIdented(self.type,level)
+        printValueIdented('condition',level + 1)
         self.expre.printTree(level + 2)
-        self.printValueIdented('DO',level)
+        printValueIdented('DO',level)
         self.inst.printTree(level + 1)
-        self.printValueIdented('END_WHILE',level)
+        printValueIdented('END_WHILE',level)
 
 class RepeatWhile(Expression):
     
@@ -203,9 +205,9 @@ class RepeatWhile(Expression):
         self.expre = expre
         
     def printTree(self,level):
-        self.printValueIdented(self.type,level)
+        printValueIdented(self.type,level)
         self.inst.printTree(level + 1)
-        self.printValueIdented('condition',level + 1)
+        printValueIdented('condition',level + 1)
         self.expre.printTree(level + 2) 
 
 class Number(Expression):
@@ -215,8 +217,8 @@ class Number(Expression):
         self.number = number
 
     def printTree(self, level):
-        self.printValueIdented(self.type, level)
-        self.printValueIdented(self.number, level + 1)
+        printValueIdented(self.type, level)
+        printValueIdented(self.number, level + 1)
 
 class String(Expression):
 
@@ -225,8 +227,8 @@ class String(Expression):
 		self.string = string
 
 	def printTree(self, level):
-		self.printValueIdented(self.type, level)
-		self.printValueIdented(self.string, level + 1)
+		printValueIdented(self.type, level)
+		printValueIdented(self.string, level + 1)
 
 class Identifier(Expression):
 
@@ -235,8 +237,8 @@ class Identifier(Expression):
 		self.identifier = identifier
 
 	def printTree(self, level):
-		self.printValueIdented(self.type, level)
-		self.printValueIdented(self.identifier, level + 1)
+		printValueIdented(self.type, level)
+		printValueIdented(self.identifier, level + 1)
 
 class Bool(Expression):
     
@@ -245,8 +247,8 @@ class Bool(Expression):
         self.value = value
 
     def printTree(self,level):
-        self.printValueIdented(self.type, level)
-        self.printValueIdented(self.value, level + 1)
+        printValueIdented(self.type, level)
+        printValueIdented(self.value, level + 1)
 
 class Parenthesis(Expression):
     
@@ -255,7 +257,7 @@ class Parenthesis(Expression):
         self.exp  = exp
 
     def printTree(self,level):
-        self.printValueIdented(self.type, level)
+        printValueIdented(self.type, level)
         self.exp.printTree(level + 1)
 
 # Clase de Conjunto
@@ -266,7 +268,7 @@ class Set(Expression):
         self.list_expr = list_expr
  
     def printTree(self,level):
-        self.printValueIdented(self.type, level)
+        printValueIdented(self.type, level)
         if self.list_expr:
             for expr in self.list_expr:
                 expr.printTree(level + 1)
@@ -278,7 +280,7 @@ class Type(Expression):
         self.type = typeName
  
     def printTree(self,level):
-        self.printValueIdented(self.type, level + 1)
+        printValueIdented(self.type, level + 1)
 
 #Classe para los Operadores Binarios
 class BinaryOperator(Expression):
@@ -343,5 +345,5 @@ class Operator(Expression):
         self.name     = operator_dicc[operator]
  
     def printTree(self,level):
-        self.printValueIdented(self.name +" "+ self.operator, level)
+        printValueIdented(self.name +" "+ self.operator, level)
 
