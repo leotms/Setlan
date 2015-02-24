@@ -3,22 +3,5 @@ program {
         int i,j,k;
         bool b,c;
         set s;
-    in
-    i = 2;
-    if(true) {
-        using
-            set i;
-            bool b;
-        in
-        i = {1,2,3};
-        # nótese que al lado izquierdo del `min`, `i` es int 
-        # y al lado derecho es set
-        for i min i <+> 2 do {
-          using bool i; in          # una `i` más
-          i = (1 == 2)
-        };
-    } else {
-       using bool i; in
-       i = (1 == 2)
-    }
+   in
 }

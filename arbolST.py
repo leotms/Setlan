@@ -18,7 +18,7 @@ def setParents(newObject, table):
         table.children.append(newObject.symTable)
     else:
         newObject.symTable = table
-        table.children.append(newObject.symTable)
+        #table.children.append(newObject.symTable)
 
 
 # Clase Expression. Usada para la herencia
@@ -154,6 +154,7 @@ class Declaration(Expression):
         new_ids = tablaSimbolos()
         for identifier in self.list_id:
             new_ids.insert(identifier, self.type.type)
+        new_ids.printTable(1)
         setParents(self.symTable, new_ids)
         return True
 
