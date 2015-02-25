@@ -11,6 +11,8 @@ Ult. Modificacion el 22/02/2015
 
 from arbolST import *
 
+
+
 class Table:
 
     def getIdent(self,level):
