@@ -9,13 +9,12 @@ Ult. Modificacion el 09/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
-from tablaSimbolos import *
+from SymbolTable import *
 
 #Para establecer el alcance de las variables
-def empile(newObject, table):
+def empile(newObject, symTable):
     if isinstance(newObject, Block):
-        newObject.symTable.outer = table
-        table.children.append(newObject.symTable)
+        newObject.symTable = symTable
     else:
         newObject.symTable = table
         #table.children.append(newObject.symTable)
@@ -32,7 +31,7 @@ class Program(Expression):
     def __init__(self, statement):
         self.type      = "PROGRAM"
         self.statement = statement
-        self.symTable  = tablaSimbolos()
+        self.symTable  = SymbolTable()
 
     def printTree(self, level):
         printValueIdented(self.type, level)
@@ -96,7 +95,7 @@ class Block(Expression):
         self.type          = "BLOCK"
         self.list_inst     = list_inst
         self.declaraciones = declaraciones
-        self.symTable      = tablaSimbolos()
+        self.symTable      = SymbolTable()
   
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -122,7 +121,7 @@ class Using(Expression):
     def __init__(self, list_declare):
         self.type         = "USING"
         self.list_declare = list_declare
-        self.symTable     = tablaSimbolos()
+        self.symTable     = SymbolTable()
  
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -139,12 +138,14 @@ class Using(Expression):
                 boolean = False
         return boolean
 
+        ##AQUI SALGO DEL BLOQUEEE!
+
 class Declaration(Expression):
  
     def __init__(self, decType, list_id):
         self.type = decType
         self.list_id = list_id
-        self.symTable = tablaSimbolos()
+        self.symTable = SymbolTable()
  
     def printTree(self, level):
         self.type.printTree(level)
@@ -152,7 +153,7 @@ class Declaration(Expression):
             printValueIdented(identifier, level + 2)
 
     def checkType(self):
-        #new_ids = tablaSimbolos()
+        #new_ids = SymbolTable()
         for identifier in self.list_id:
             self.symTable.insert(identifier, self.type.type)
             #new_ids.printTable(1)
