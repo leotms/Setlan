@@ -9,13 +9,17 @@ Ult. Modificacion el 22/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
-#Funciones utiles:
+
+# Funciones para la impresion
+# Devuelve la identacion adecuada al nivel
 def getIdent(level):
-	return level * 4
+    return level * 4
 
+# Imprime en pantalla un valor identado
 def printValueIdented(value, level):
-	print getIdent(level)* " " + str(value)
+    print getIdent(level)* " " + str(value)
 
+# Clase Simbolo
 class Simbolo(object):
 
 	global symbol_default
@@ -40,81 +44,70 @@ class Simbolo(object):
 		string += " | Value: " + str(self.value)
 		printValueIdented(string, level)
 
-class tablaSimbolos(object):
+# Clase Tabla de Simbolos, provee lo necesario para construir una 
+# nueva tabla de simbolos.
+class tablaSimbolos(Table):
+    pass
 
-    def __init__(self):
-        self.actual   = {}
-        self.children = []
-        self.parent   = None
-        self.errors   = []
+    # def __init__(self):
+    #     self.actual  = {}
+    #     self.parent  = None
+    #     self.errors  = []
 
-    def printTable(self, level):
-        printValueIdented("SCOPE",level)
-        for symbol in self.actual:
-           	self.actual[symbol].printTable(level + 1)
-        if self.children:
-        	for child in self.children:
-        		child.printTable(level+1)
-
-        printValueIdented("END_SCOPE\n",level)
+    # def printTable(self, level):
+    #     printValueIdented("SCOPE\n",level)
+    #     for symbol in self.scope:
+    #         self.scope[symbol].printTable(level + 1)
+    #     printValueIdented("END_SCOPE\n",level)
+    #     if self.outer:
+    #         self.outer.printTable(level + 1)
 
 
-    def insert(self, variable, dataType):
-        if not self.contains(variable):
-            self.actual[variable] = Simbolo(variable, dataType)
-        else:
-            string = "Variable " + str(variable) + " already defined."
-            self.error(string)
+    # def insert(self, variable, dataType):
+    #     if not self.contains(variable):
+    #         self.scope[variable] = Simbolo(variable, dataType)
+    #     else:
+    #         string = "Variable " + str(variable) + " already in scope"
+    #         self.error(string)
 
-    def delete(self, variable):
-        if self.contains(variable):
-            del self.actual[variable]
-        else:
-            string ="Variable '" + variable+ "' not defined."
-            self.error(string)
+    # def delete(self, variable):
+    #     if self.contains(variable):
+    #         del self.scope[variable]
+    #     else:
+    #         string ="No '" + variable+ "' in scope"
+    #         self.error(string)
 
-    def update(self, variable, dataType, value):
-        if self.contains(variable):
-            if variable in self.actual:
-                symbol = self.actual[variable]
+    # def update(self, variable, dataType, value):
+    #     if self.contains(variable):
+    #         if variable in self.scope:
+    #             symbol = self.scope[variable]
 
-                if dataType == symbol.dataType:
-                    symbol.value = value
-                    self.actual[variable] = symbol
-                    return True
-                else:
-                    string = "SymTable.update: Different data types."
-                    self.error.append(string)
-                    return False
-            else:
-                return self.parent.update(variable, dataType, value)
-        else:
-            print "SymTable.update: variable '" + variable + "' not defined."
-            return False
+    #             if dataType == symbol.dataType:
+    #                 symbol.value = value
+    #                 self.scope[variable] = symbol
+    #                 return True
+    #             else:
+    #                 string = "SymTable.update: Different data types"
+    #                 self.error.append(string)
+    #                 return False
+    #         else:
+    #             return self.outer.update(variable, dataType, value)
+    #     else:
+    #         print "SymTable.update: No " + variable + " in scope"
+    #         return False
 
-    def contains(self, variable):
-        if self.actual:
-            if variable in self.actual:
-                return True
-        else:
-            return False
+    # def contains(self, variable):
+    #     if self.scope:
+    #         print(str(self.scope))
+    #         if variable in self.scope:
+    #             return True
+    #     else:
+    #         return False
 
-    def inContext(self, variable):
-    	if self.actual:
-    		if variable in self.actual:
-    			return True
-    	elif self.parent:
-    		return self.parent.inContext(variable)
-    	else:
-    		return False
+    # def lookup(self, value):
+    #     pass
 
-    def lookup(self, value):
-    	if self.actual:
-    		if variable in self.actual:
-    			return self.actual[variable]
-    	elif self.parent:
-    		return self.parent.lookup(variable)
-    	return "Variable " + variable + " not in context."
 
-    def error(self, mensaje):
-        self.errors.append(mensaje)
+    # def error(self, mensaje):
+    #     self.errors.append(mensaje)
+
