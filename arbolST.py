@@ -11,20 +11,14 @@ Ult. Modificacion el 09/02/2015
 
 from tablaSimbolos import *
 
-#Para establecer el alcance de las variables
-def empile(newObject, table):
-    if isinstance(newObject, Block):
-        newObject.symTable = table
-         #table.children.append(newObject.symTable)
-    else:
-        newObject.symTable = table
-        #table.children.append(newObject.symTable)
-        #table.children.append(newObject.symTable)
+global lista
 
+class NodoLista(Object):
 
-# Clase Expression. Usada para la herencia
-class Expression:
-    pass
+    def __init__(self, num1, num2):
+        self.idnodo  = num1
+        self.idpadre = num2
+        self.tabla   = tablaSimbolos()
 
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
@@ -32,16 +26,13 @@ class Program(Expression):
     def __init__(self, statement):
         self.type      = "PROGRAM"
         self.statement = statement
-        self.symTable  = tablaSimbolos()
+        self.lista     = []
 
     def printTree(self, level):
         printValueIdented(self.type, level)
         self.statement.printTree(level+1)
 
-    def checkType(self):
-        empile(self.statement, self.symTable)
-        if self.statement.checkType():
-            return self.symTable
+    def 
 
 class Assign(Expression):
 
