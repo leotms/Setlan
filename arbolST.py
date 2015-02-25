@@ -20,6 +20,10 @@ class NodoLista(Object):
         self.idpadre = num2
         self.tabla   = tablaSimbolos()
 
+    def enlistar(self,nuevo, tabla):
+        if isinstance(nuevo, Block):
+            nuevo.
+
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
 
