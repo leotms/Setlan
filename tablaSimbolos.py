@@ -56,7 +56,7 @@ class tablaSimbolos(Table):
         # Comentado en caso de ser utilizado mas adelante.
         # self.errors  = []
 
-    #Imprime los simbolos de la tabla actual y de sus sucesras.
+    # Imprime los simbolos de la tabla actual y de sus sucesras.
     def printTable(self, level):
         # La tabla actual
         printValueIdented("SCOPE\n",level)
@@ -81,16 +81,17 @@ class tablaSimbolos(Table):
         if not self.contains(variable):
             self.symbols[variable] = Simbolo(variable, dataType)
         else:-
-            string = "Variable '" + str(variable) + "' ya esta definida"
+            string = "Variable '" + str(variable) + "' ya esta definida."
             print(string)
             #self.error(string)
 
-    # def delete(self, variable):
-    #     if self.contains(variable):
-    #         del self.symbols[variable]
-    #     else:
-    #         string ="No '" + variable+ "' in symbols"
-    #         self.error(string)
+    # Elimina un simbolo de la tabla de simbolos actual
+    def delete(self, variable):
+        if self.contains(variable):
+            del self.symbols[variable]
+        else:
+            string = "Variable '" + variable+ "' no definida."
+            self.error(string)
 
     # def update(self, variable, dataType, value):
     #     if self.contains(variable):
