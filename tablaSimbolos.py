@@ -21,27 +21,27 @@ def printValueIdented(value, level):
 # Clase Simbolo
 class Simbolo(object):
 
-	global symbol_default
-	symbol_default = {
-		'INT' : 0,
-		'BOOL': 'false',
-		'SET' : '{}'
-	}
+    global symbol_default
+    symbol_default = {
+        'INT' : 0,
+        'BOOL': 'false',
+        'SET' : '{}'
+    }
 
-	def __init__(self, name, type, value = None):
-		self.name = name
-		self.type = type
-		# Colocamos el valor por defecto
-		if value == None:
-			self.value = symbol_default[type]
-		else:
-			self.value = value
+    def __init__(self, name, type, value = None):
+        self.name = name
+        self.type = type
+        # Colocamos el valor por defecto
+        if value == None:
+            self.value = symbol_default[type]
+        else:
+            self.value = value
 
-	def printTable(self, level):
-		string  = "Variable: " + self.name
-		string += " | Type: "   + self.type
-		string += " | Value: " + str(self.value)
-		printValueIdented(string, level)
+    def printTable(self, level):
+        string  = "Variable: " + self.name
+        string += " | Type: "   + self.type
+        string += " | Value: " + str(self.value)
+        printValueIdented(string, level)
 
 
 # Clase Tabla de Simbolos, provee lo necesario para construir una 
@@ -69,12 +69,21 @@ class tablaSimbolos(Table):
             for child in clindren:
                 child.printTable(level + 1children
 
-    # def insert(self, variable, dataType):
-    #     if not self.contains(variable):
-    #         self.symbols[variable] = Simbolo(variable, dataType)
-    #     else:
-    #         string = "Variable " + str(variable) + " already in symbols"
-    #         self.error(string)
+    # Comprueba si una variable esta delcarada en la tabla
+    # de simbolos actual
+    def contains(self, variable):
+        if self.symbols:
+            return (variable in self.symbols)
+        return False
+
+    #Inserta un simbolo en la tabla de simbolos local
+    def insert(self, variable, dataType):
+        if not self.contains(variable):
+            self.symbols[variable] = Simbolo(variable, dataType)
+        else:-
+            string = "Variable '" + str(variable) + "' ya esta definida"
+            print(string)
+            #self.error(string)
 
     # def delete(self, variable):
     #     if self.contains(variable):
@@ -102,17 +111,8 @@ class tablaSimbolos(Table):
     #         print "SymTable.update: No " + variable + " in symbols"
     #         return False
 
-    # def contains(self, variable):
-    #     if self.symbols:
-    #         print(str(self.symbols))
-    #         if variable in self.symbols:
-    #             return True
-    #     else:
-    #         return False
-
     # def lookup(self, value):
     #     pass
-
 
     # def error(self, mensaje):
     #     self.errors.append(mensaje)
