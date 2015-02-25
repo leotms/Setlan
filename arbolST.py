@@ -14,8 +14,8 @@ from tablaSimbolos import *
 #Para establecer el alcance de las variables
 def empile(newObject, table):
     if isinstance(newObject, Block):
-        newObject.symTable = table
-         #table.children.append(newObject.symTable)
+        newObject.symTable.outer = table
+        table.children.append(newObject.symTable)
     else:
         newObject.symTable = table
         #table.children.append(newObject.symTable)
