@@ -9,7 +9,16 @@ Ult. Modificacion el 22/02/2015
 @author:  Leonardo Martinez 11-10576
 '''
 
+# Funciones para la impresion
+# Devuelve la identacion adecuada al nivel
+def getIdent(level):
+    return level * 4
 
+# Imprime en pantalla un valor identado
+def printValueIdented(value, level):
+    print getIdent(level)* " " + str(value)
+
+# Clase Simbolo
 class Simbolo(object):
 
 	global symbol_default
@@ -32,8 +41,11 @@ class Simbolo(object):
 		string  = "Variable: " + self.name
 		string += " | Type: "   + self.type
 		string += " | Value: " + str(self.value)
-		self.printValueIdented(string, level)
+		printValueIdented(string, level)
 
+
+# Clase Tabla de Simbolos, provee lo necesario para construir una 
+# nueva tabla de simbolos.
 class tablaSimbolos(Table):
     pass
 
@@ -43,10 +55,10 @@ class tablaSimbolos(Table):
     #     self.errors  = []
 
     # def printTable(self, level):
-    #     self.printValueIdented("SCOPE\n",level)
+    #     printValueIdented("SCOPE\n",level)
     #     for symbol in self.scope:
     #         self.scope[symbol].printTable(level + 1)
-    #     self.printValueIdented("END_SCOPE\n",level)
+    #     printValueIdented("END_SCOPE\n",level)
     #     if self.outer:
     #         self.outer.printTable(level + 1)
 
