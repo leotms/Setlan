@@ -67,7 +67,7 @@ class tablaSimbolos(Table):
         # Se imprimen los hijos
         if self.children:
             for child in clindren:
-                child.printTable(level + 1children
+                child.printTable(level + 1)
 
     # Comprueba si una variable esta delcarada en la tabla
     # de simbolos actual
