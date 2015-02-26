@@ -138,13 +138,16 @@ class Declaration(Expression):
         for identifier in self.list_id:
             printValueIdented(identifier, level + 2)
 
+    def error_redeclaration(variable, alcance, tipo):
+        error = "ERROR: La variable"+variable+"de tipo"+tipo+"ya fue declarada."
+
     def symbolcheck(self):
         
         for var in identificadores:
             if alcance.contains(var):
-                error_redeclaracion(var,alcance,var.type)
+                error_redeclaration(var,alcance,tipo)
             else:
-                alcance.insert(var,var.type)
+                alcance.insert(var,tipo)
 
 class If(Expression):   
     
