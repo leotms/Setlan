@@ -13,6 +13,14 @@ Ult. Modificacion el 09/02/2015
 #Importamos
 from tablaSimbolos import *
 
+#Empila una nueva tabla de simbolos
+def empilar(objeto, alcance):
+    if isinstance(objeto, Block):
+        objeto.symbols.parent = alcance
+    else:
+        objeto.symbols = alcance
+    
+
 # Clase Expression.
 class Expression:
 	pass
@@ -23,11 +31,16 @@ class Program(Expression):
     def __init__(self, statement):
         self.type      = "PROGRAM"
         self.statement = statement
-        self.lista     = []
+        self.alcance   = tablaSimbolos()
 
 	def printTree(self, level):
 		printValueIdented(self.type, level)
 		self.statement.printTree(level+1)
+
+    def symbolcheck(self):
+        empilar(self.instruccion, self.alcance)
+        if self.instruccion.check():
+            return self.alcance
 
 class Assign(Expression):
 
@@ -75,11 +88,11 @@ class Scan(Expression):
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
   
-    def __init__(self, list_inst, declaraciones =  None):
+    def __init__(self, list_inst, declaraciones=None, alcance=tablaSimbolos()):
         self.type          = "BLOCK"
         self.list_inst     = list_inst
         self.declaraciones = declaraciones
-        self.symTable      = tablaSimbolos()
+        self.alcance       = alcance
   
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -93,6 +106,10 @@ class Block(Expression):
                 inst.printTree(level + 1)
       
         printValueIdented("BLOCK_END", level)
+
+    def symbolcheck(self):
+        
+        for inst in self.instruccion:
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -114,12 +131,20 @@ class Declaration(Expression):
     def __init__(self, decType, list_id):
         self.type = decType
         self.list_id = list_id
-        self.symTable = tablaSimbolos()
+        self.alcance = tablaSimbolos()
  
     def printTree(self, level):
         self.type.printTree(level)
         for identifier in self.list_id:
             printValueIdented(identifier, level + 2)
+
+    def symbolcheck(self):
+        
+        for var in identificadores:
+            if alcance.contains(var):
+                error_redeclaracion(var,alcance,var.type)
+            else:
+                alcance.insert(var,var.type)
 
 class If(Expression):   
     
