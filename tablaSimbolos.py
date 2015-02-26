@@ -24,9 +24,9 @@ class Simbolo(object):
 
     global symbol_default
     symbol_default = {
-        'INT' : 0,
-        'BOOL': 'false',
-        'SET' : '{}'
+        'int' : 0,
+        'bool': 'false',
+        'set' : '{}'
     }
 
     def __init__(self, name, type, value = None):
@@ -46,8 +46,8 @@ class Simbolo(object):
 
 # Clase Tabla de Simbolos, provee lo necesario para construir una 
 # nueva tabla de simbolos.
-class tablaSimbolos(Table):
-    pass
+class tablaSimbolos(object):
+
 
     def __init__(self):
         self.symbols  = {}
@@ -66,7 +66,7 @@ class tablaSimbolos(Table):
 
         # Se imprimen los hijos
         if self.children:
-            for child in clindren:
+            for child in self.children:
                 child.printTable(level + 1)
 
     # Comprueba si una variable esta delcarada en la tabla
@@ -80,7 +80,7 @@ class tablaSimbolos(Table):
     def insert(self, variable, dataType):
         if not self.contains(variable):
             self.symbols[variable] = Simbolo(variable, dataType)
-        else:-
+        else:
             string = "Variable '" + str(variable) + "' ya esta definida."
             print(string)
             #self.error(string)
@@ -117,4 +117,3 @@ class tablaSimbolos(Table):
 
     # def error(self, mensaje):
     #     self.errors.append(mensaje)
-

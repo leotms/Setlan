@@ -16,8 +16,8 @@ from tablaSimbolos import *
 #Empila una nueva tabla de simbolos
 def empilar(objeto, alcance):
     if isinstance(objeto, Block):
-        objeto.symbols.parent = alcance
-        alcance.children.append(objeto.symbols)
+        objeto.alcance.parent = alcance
+        alcance.children.append(objeto.alcance)
     else:
         objeto.symbols = alcance
     
@@ -39,8 +39,8 @@ class Program(Expression):
 		self.statement.printTree(level+1)
 
     def symbolcheck(self):
-        empilar(self.instruccion, self.alcance)
-        if self.instruccion.check():
+        empilar(self.statement, self.alcance)
+        if self.statement.symbolcheck():
             return self.alcance
 
 class Assign(Expression):
@@ -110,9 +110,13 @@ class Block(Expression):
 
     def symbolcheck(self):
         if self.declaraciones:
-            declaraciones.symbolcheck()
-        for inst in self.instruccion:
-            inst.symbolcheck()
+            empilar(self.declaraciones, self.alcance)
+            self.declaraciones.symbolcheck()
+        if self.list_inst:
+            for inst in self.list_inst:
+                empilar(inst, self.alcance)
+                inst.symbolcheck()
+        return True
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -131,6 +135,7 @@ class Using(Expression):
 
     def symbolcheck(self):
         for declaration in self.list_declare:
+            empilar(declaration, self.symTable)
             declaration.symbolcheck()
 
 class Declaration(Expression):
@@ -145,18 +150,16 @@ class Declaration(Expression):
         for identifier in self.list_id:
             printValueIdented(identifier, level + 2)
 
-    def error_redeclaration(variable, alcance, tipo):
-        error = "ERROR: La variable"+variable+"de tipo"+tipo+"ya fue declarada."
+    def error_redeclaration(variable, tipo):
+        error = "ERROR: La variable '"+variable+"' de tipo <"+tipo+"> ya fue declarada."
 
     def symbolcheck(self):
         
-        for var in list_id:
-            if alcance.contains(var):
-                error_redeclaration(var,alcance,tipo)
+        for var in self.list_id:
+            if self.alcance.contains(var):
+                error_redeclaration(var, self.type.type)
             else:
-                alcance.insert(var,tipo)
-
-        empilar(self.)
+                self.alcance.insert(var, self.type.type)
 
 class If(Expression):   
     

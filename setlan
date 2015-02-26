@@ -38,5 +38,5 @@ if __name__ == '__main__':
 
         else:
             #arbol.printTree(0)
-            symTable = arbol.checkType()
+            symTable = arbol.symbolcheck()
             symTable.printTable(0)
