@@ -17,6 +17,7 @@ from tablaSimbolos import *
 def empilar(objeto, alcance):
     if isinstance(objeto, Block):
         objeto.symbols.parent = alcance
+        alcance.children.append(objeto.symbols)
     else:
         objeto.symbols = alcance
     
@@ -108,8 +109,10 @@ class Block(Expression):
         printValueIdented("BLOCK_END", level)
 
     def symbolcheck(self):
-        
+        if self.declaraciones:
+            declaraciones.symbolcheck()
         for inst in self.instruccion:
+            inst.symbolcheck()
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -126,6 +129,10 @@ class Using(Expression):
             declaration.printTree(level)
         printValueIdented("IN", level)
 
+    def symbolcheck(self):
+        for declaration in self.list_declare:
+            declaration.symbolcheck()
+
 class Declaration(Expression):
  
     def __init__(self, decType, list_id):
@@ -140,11 +147,13 @@ class Declaration(Expression):
 
     def symbolcheck(self):
         
-        for var in identificadores:
+        for var in list_id:
             if alcance.contains(var):
                 error_redeclaracion(var,alcance,var.type)
             else:
                 alcance.insert(var,var.type)
+
+        empilar(self.)
 
 class If(Expression):   
     
