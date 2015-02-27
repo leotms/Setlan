@@ -60,7 +60,22 @@ class Assign(Expression):
 		printValueIdented("VALUE", level + 1)
 		self.rightExp.printTree(level + 2)
 
-    def symbolcheck(self): pass
+    def symbolcheck(self):
+        
+        empilar(self.rightExp, self.alcance)
+        empilar(self.leftIdent, self.alcance)
+    
+        RightExpType  = self.rightExp.symbolcheck()
+        LeftIdentType = self.leftIdent.symbolcheck()
+
+        print LeftIdentType, RightExpType 
+
+        if RightExpType is not None:
+            self.alcance.contains(self.leftIdent)
+
+        if LeftIdentType != RightExpType: 
+            mensaje  = "ERROR de tipo "###########################################
+            print mensaje
 
 class Print(Expression):
  
@@ -160,6 +175,7 @@ class Declaration(Expression):
                 print "redeclaracion de " + var
             else:
                 self.alcance.insert(var, self.type.type)
+
 #################################################################
 
 class If(Expression):   
@@ -267,7 +283,7 @@ class Number(Expression):
         printValueIdented(self.number, level + 1)
 
     def symbolcheck(self):
-        return 'INT'
+        return 'int'
 
 # Clase para definir un string o cadena de caracteres.
 class String(Expression):
@@ -294,7 +310,13 @@ class Identifier(Expression):
 		printValueIdented(self.type, level)
 		printValueIdented(self.identifier, level + 1)
 
-    def symbolcheck(self): pass
+    def symbolcheck(self): 
+        if self.alcance.contains(self.identifier):
+            identifier = self.alcance.buscar(self.identifier)
+            return identifier.type
+        else:
+            mensaje = "ERROR:" ###################################################
+            return None
 
 # Clase para definir una expresion booleana.
 class Bool(Expression):
@@ -308,7 +330,7 @@ class Bool(Expression):
         printValueIdented(self.value, level + 1)
 
     def symbolcheck(self):
-        return 'BOOL'
+        return 'bool'
 
 class Parenthesis(Expression):
     

@@ -59,7 +59,7 @@ class tablaSimbolos(object):
     def printTable(self, level):
         # La tabla actual    
         if self.symbols != {}:
-            printValueIdented("SCOPE\n",level)
+            printValueIdented("SCOPE",level)
             for symbol in self.symbols:
                 self.symbols[symbol].printTable(level + 1)
             printValueIdented("END_SCOPE\n",level)
@@ -75,6 +75,24 @@ class tablaSimbolos(object):
         if self.symbols:
             return (variable in self.symbols)
         return False
+
+    # Comprueba si una variable esta declarada en la tabla de 
+    # simbolos global
+    def globalContains(self, variable):
+        if self.symbols:
+            return (variable in self.symbols)
+        if self.parent:
+            return self/parent.contains(variable)
+        return False
+
+    # Busca una variable de manera global declarada en la tabla 
+    # de simbolos.
+    def buscar(self, variable):
+        if variable in self.symbols:
+            return self.symbols[variable]
+        else:
+            if self.parent:
+                return self.parent.buscar(variable)
 
     #Inserta un simbolo en la tabla de simbolos local
     def insert(self, variable, dataType):
