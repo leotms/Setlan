@@ -12,6 +12,7 @@ Ult. Modificacion el 09/02/2015
 
 #Importamos
 from tablaSimbolos import *
+from   lexer       import find_column
 
 #Empila una nueva tabla de simbolos
 def empilar(objeto, alcance):
@@ -19,8 +20,8 @@ def empilar(objeto, alcance):
         objeto.alcance.parent = alcance
         alcance.children.append(objeto.alcance)
     else:
-        objeto.symbols = alcance
-    
+        objeto.alcance = alcance
+   
 
 # Clase Expression.
 class Expression:
@@ -46,7 +47,7 @@ class Program(Expression):
 class Assign(Expression):
 
     def __init__(self, leftIdent, rightExp):
-        self.type = "ASSIGN"
+        self.type      = "ASSIGN"
         self.leftIdent = leftIdent
         self.rightExp  = rightExp
 
@@ -59,10 +60,12 @@ class Assign(Expression):
 		printValueIdented("VALUE", level + 1)
 		self.rightExp.printTree(level + 2)
 
+    def symbolcheck(self): pass
+
 class Print(Expression):
  
     def __init__(self, printType, elements):
-        self.type = printType
+        self.type     = printType
         self.elements = elements
  
     def printTree(self, level):
@@ -89,11 +92,11 @@ class Scan(Expression):
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
   
-    def __init__(self, list_inst, declaraciones=None, alcance=tablaSimbolos()):
+    def __init__(self, list_inst, declaraciones = None):
         self.type          = "BLOCK"
         self.list_inst     = list_inst
         self.declaraciones = declaraciones
-        self.alcance       = alcance
+        self.alcance       = tablaSimbolos()
   
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -124,7 +127,7 @@ class Using(Expression):
     def __init__(self, list_declare):
         self.type         = "USING"
         self.list_declare = list_declare
-        self.symTable     = tablaSimbolos()
+        self.alcance      = tablaSimbolos()
  
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -135,13 +138,13 @@ class Using(Expression):
 
     def symbolcheck(self):
         for declaration in self.list_declare:
-            empilar(declaration, self.symTable)
+            empilar(declaration, self.alcance)
             declaration.symbolcheck()
 
 class Declaration(Expression):
  
     def __init__(self, decType, list_id):
-        self.type = decType
+        self.type    = decType
         self.list_id = list_id
         self.alcance = tablaSimbolos()
  
@@ -150,16 +153,14 @@ class Declaration(Expression):
         for identifier in self.list_id:
             printValueIdented(identifier, level + 2)
 
-    def error_redeclaration(variable, tipo):
-        error = "ERROR: La variable '"+variable+"' de tipo <"+tipo+"> ya fue declarada."
-
+#################################################################
     def symbolcheck(self):
-        
         for var in self.list_id:
             if self.alcance.contains(var):
-                error_redeclaration(var, self.type.type)
+                print "redeclaracion de " + var
             else:
                 self.alcance.insert(var, self.type.type)
+#################################################################
 
 class If(Expression):   
     
@@ -265,6 +266,10 @@ class Number(Expression):
         printValueIdented(self.type, level)
         printValueIdented(self.number, level + 1)
 
+    def symbolcheck(self):
+        return 'INT'
+
+# Clase para definir un string o cadena de caracteres.
 class String(Expression):
 
     def __init__(self, string):
@@ -275,6 +280,10 @@ class String(Expression):
 		printValueIdented(self.type, level)
 		printValueIdented(self.string, level + 1)
 
+    def symbolcheck(self):
+        return 'STRING'
+
+# Clase para definir un identificador o variable.
 class Identifier(Expression):
 
     def __init__(self, identifier):
@@ -285,6 +294,9 @@ class Identifier(Expression):
 		printValueIdented(self.type, level)
 		printValueIdented(self.identifier, level + 1)
 
+    def symbolcheck(self): pass
+
+# Clase para definir una expresion booleana.
 class Bool(Expression):
     
     def __init__(self, value):
@@ -294,6 +306,9 @@ class Bool(Expression):
     def printTree(self,level):
         printValueIdented(self.type, level)
         printValueIdented(self.value, level + 1)
+
+    def symbolcheck(self):
+        return 'BOOL'
 
 class Parenthesis(Expression):
     
@@ -305,7 +320,7 @@ class Parenthesis(Expression):
         printValueIdented(self.type, level)
         self.exp.printTree(level + 1)
 
-# Clase de Conjunto
+# Clase para definir un Conjunto.
 class Set(Expression):
  
     def __init__(self,list_expr):
@@ -318,7 +333,7 @@ class Set(Expression):
             for expr in self.list_expr:
                 expr.printTree(level + 1)
 
-#Expresion para los tipos
+# Clase para definir los tipos.
 class Type(Expression):
 
     def __init__(self, typeName):
@@ -384,7 +399,36 @@ class Operator(Expression):
         '==' :'EQUAL',
         '/=' :'UNEQUAL',        
     }
+
+################################################################################
+#                       CHEQUEO DE OPERADORES BINARIOS                         #
+################################################################################
  
+# Chequeo generico de los tipos de los operadores binarios
+def binarysymbolcheck(operator, expleft, expright, types):
+    
+    for t in types:
+        t_return = None
+
+        if len(t) == 3:
+            t_left, t_right, t_return = t
+        else:
+            t_left, t_right = t
+
+        if (expleft, expright) == (t_left, t_right):
+            if t_return is not None:
+                return t_return
+            else:
+                expright
+
+    # Muestra error cuando no es soportada la operacion binaria
+    if expleft is not None and expright is not None: pass
+    
+                
+
+
+################################################################################
+
     def __init__(self,operator):
         self.operator = operator
         self.name     = operator_dicc[operator]

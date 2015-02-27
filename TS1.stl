@@ -3,5 +3,25 @@ program {
         int i,j,k;
         bool b,c;
         set s;
-   in
+    in
+    { using
+        int z, m, w;
+        set c;
+        bool k;
+      in
+        { using
+            int z, m, w;
+            set c;
+            bool k;
+          in    
+        };    
+    };
+
+    { using
+        int f, n, p;
+        set c;
+        bool k;
+      in    
+    }
+    
 }

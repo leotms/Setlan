@@ -48,7 +48,6 @@ class Simbolo(object):
 # nueva tabla de simbolos.
 class tablaSimbolos(object):
 
-
     def __init__(self):
         self.symbols  = {}
         self.parent   = None
@@ -56,13 +55,14 @@ class tablaSimbolos(object):
         # Comentado en caso de ser utilizado mas adelante.
         # self.errors  = []
 
-    # Imprime los simbolos de la tabla actual y de sus sucesras.
+    # Imprime los simbolos de la tabla actual y de sus sucesoras.
     def printTable(self, level):
-        # La tabla actual
-        printValueIdented("SCOPE\n",level)
-        for symbol in self.symbols:
-            self.symbols[symbol].printTable(level + 1)
-        printValueIdented("END_SCOPE\n",level)
+        # La tabla actual    
+        if self.symbols != {}:
+            printValueIdented("SCOPE\n",level)
+            for symbol in self.symbols:
+                self.symbols[symbol].printTable(level + 1)
+            printValueIdented("END_SCOPE\n",level)
 
         # Se imprimen los hijos
         if self.children:
