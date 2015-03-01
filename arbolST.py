@@ -14,6 +14,9 @@ Ult. Modificacion el 09/02/2015
 from tablaSimbolos import *
 from   lexer       import find_column
 
+#Errores
+type_error_list = []
+
 #Empila una nueva tabla de simbolos
 def empilar(objeto, alcance):
     if isinstance(objeto, Block):
@@ -21,7 +24,6 @@ def empilar(objeto, alcance):
         alcance.children.append(objeto.alcance)
     else:
         objeto.alcance = alcance
-   
 
 # Clase Expression.
 class Expression:
@@ -74,8 +76,10 @@ class Assign(Expression):
             self.alcance.contains(self.leftIdent)
 
         if LeftIdentType != RightExpType: 
-            mensaje  = "ERROR de tipo "###########################################
-            print mensaje
+            mensaje  = "ERROR: No se puede asignar '" + RightExpType \
+                       + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
+                       + str(LeftIdentType) + "'"###########################################
+            type_error_list.append(mensaje)
 
 class Print(Expression):
  
@@ -168,7 +172,6 @@ class Declaration(Expression):
         for identifier in self.list_id:
             printValueIdented(identifier, level + 2)
 
-#################################################################
     def symbolcheck(self):
         for var in self.list_id:
             if self.alcance.contains(var):
@@ -305,19 +308,26 @@ class Identifier(Expression):
     def __init__(self, identifier):
         self.type       = "VARIABLE"
         self.identifier = identifier
+        self.alcance    = tablaSimbolos()
+
+    def __str__(self):
+        return self.identifier
 
 	def printTree(self, level):
 		printValueIdented(self.type, level)
 		printValueIdented(self.identifier, level + 1)
 
     def symbolcheck(self): 
-        return self.identifier
-        # if self.alcance.contains(self.identifier):
-        #     identifier = self.alcance.buscar(self.identifier)
-        #     return identifier.type
-        # else:
-        #     mensaje = "ERROR:" ###################################################
-        #     return None
+
+        if self.alcance.contains(self.identifier):
+            identifier = self.alcance.buscar(self.identifier)
+            return identifier.type
+        else:
+            mensaje =   "ERROR: Variable '" + str(self.identifier)\
+                      + "' es asignada antes de ser declarada." 
+            type_error_list.append(mensaje)
+
+            return str(self.identifier)
 
 # Clase para definir una expresion booleana.
 class Bool(Expression):
@@ -363,10 +373,11 @@ class Set(Expression):
             for exp in self.list_expr:
                 print("Otro :O ---> ", exp.symbolcheck())
                 if type_set != exp.symbolcheck():
-                    print("SET esperaba un numero entero pero se encontro Variable '" +
-                          exp.symbolcheck() + "'.")
-                    return False
-            return type_set
+                    mensaje = "SET esperaba un numero entero pero se encontro Variable '" \
+                             + exp.symbolcheck() + "'."
+                    type_error_list.append(mensaje)
+                    return exp.symbolcheck()
+            return 'set'
 
 # Clase para definir los tipos.
 class Type(Expression):
