@@ -311,12 +311,13 @@ class Identifier(Expression):
 		printValueIdented(self.identifier, level + 1)
 
     def symbolcheck(self): 
-        if self.alcance.contains(self.identifier):
-            identifier = self.alcance.buscar(self.identifier)
-            return identifier.type
-        else:
-            mensaje = "ERROR:" ###################################################
-            return None
+        return self.identifier
+        # if self.alcance.contains(self.identifier):
+        #     identifier = self.alcance.buscar(self.identifier)
+        #     return identifier.type
+        # else:
+        #     mensaje = "ERROR:" ###################################################
+        #     return None
 
 # Clase para definir una expresion booleana.
 class Bool(Expression):
@@ -354,6 +355,18 @@ class Set(Expression):
         if self.list_expr:
             for expr in self.list_expr:
                 expr.printTree(level + 1)
+
+    def symbolcheck(self):
+        if self.list_expr:
+            # Un set solo puede contener numeros
+            type_set = 'int'
+            for exp in self.list_expr:
+                print("Otro :O ---> ", exp.symbolcheck())
+                if type_set != exp.symbolcheck():
+                    print("SET esperaba un numero entero pero se encontro Variable '" +
+                          exp.symbolcheck() + "'.")
+                    return False
+            return type_set
 
 # Clase para definir los tipos.
 class Type(Expression):
