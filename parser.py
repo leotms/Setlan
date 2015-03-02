@@ -65,6 +65,7 @@ def p_instruccion_scan(symbol):
 def p_instruccion_block(symbol):
     """instruccion : OPENCURLY vacio CLOSECURLY
                    | OPENCURLY lista_instrucciones CLOSECURLY
+                   | OPENCURLY declaracion vacio CLOSECURLY
                    | OPENCURLY declaracion lista_instrucciones CLOSECURLY"""
     if len(symbol) <= 4:
         symbol[0] = Block(symbol[2])
@@ -77,7 +78,7 @@ def p_instruccion_declare(symbol):
     symbol[0] = Using(symbol[2])
 
 ################################################################################
-#                         LISTAS PARA LOS BLOQUES                              #
+#                         LISTAS PARA LOS BLOQUE.seS                              #
 ################################################################################
  
 # Lista de Instrucciones

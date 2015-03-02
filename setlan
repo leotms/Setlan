@@ -37,4 +37,10 @@ if __name__ == '__main__':
             print parser.parser_errorList[0]
 
         else:
-            arbol.printTree(0)
+            #arbol.printTree(0)
+            symTable = arbol.symbolcheck()
+            if parser.type_error_list:
+                for error in parser.type_error_list:
+                    print error
+            else:
+                symTable.printTable(0)
