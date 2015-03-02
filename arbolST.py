@@ -371,7 +371,6 @@ class Set(Expression):
             # Un set solo puede contener numeros
             type_set = 'int'
             for exp in self.list_expr:
-                print("Otro :O ---> ", exp.symbolcheck())
                 if type_set != exp.symbolcheck():
                     mensaje = "SET esperaba un numero entero pero se encontro Variable '" \
                              + exp.symbolcheck() + "'."

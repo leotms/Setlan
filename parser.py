@@ -78,7 +78,7 @@ def p_instruccion_declare(symbol):
     symbol[0] = Using(symbol[2])
 
 ################################################################################
-#                         LISTAS PARA LOS BLOQUES                              #
+#                         LISTAS PARA LOS BLOQUE.seS                              #
 ################################################################################
  
 # Lista de Instrucciones
