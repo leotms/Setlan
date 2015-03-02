@@ -92,8 +92,14 @@ class Print(Expression):
         for element in self.elements:
             element.printTree(level + 1)
 
-    def checkType(self):
-        pass
+    def symbolcheck(self):
+        accepted_types = ['string','int','bool','set']
+        for element in self.elements:
+            elemtype = element.symbolcheck()
+            if not elemtype in accepted_types:
+                mensaje =  "ERROR: No se puede imprimir '"\
+                           + elemtype + "'."
+                type_error_list.append(mensaje)
 
 class Scan(Expression):
     
@@ -300,7 +306,7 @@ class String(Expression):
 		printValueIdented(self.string, level + 1)
 
     def symbolcheck(self):
-        return 'STRING'
+        return 'string'
 
 # Clase para definir un identificador o variable.
 class Identifier(Expression):
