@@ -417,11 +417,19 @@ class BinaryOperator(Expression):
 
     global binaryOperatorTypeTuples
     binaryOperatorTypeTuples = {
-            ('int', 'TIMES', 'int')  : 'int',
-            ('int', 'PLUS', 'int')   : 'int',
-            ('int', 'MINUS', 'int')  : 'int',
-            ('int', 'DIVIDE', 'int') : 'int',
-            ('int', 'MODULE', 'int') : 'int'
+            ('int', 'TIMES', 'int'): 'int',
+            ('int', 'PLUS', 'int'): 'int',
+            ('int', 'MINUS', 'int'): 'int',
+            ('int', 'DIVIDE', 'int'): 'int',
+            ('int', 'MODULE', 'int'): 'int',
+            ('set', 'UNION', 'set'): 'set',
+            ('set', 'DIFERENCE','set'): 'set',
+            ('set', 'INSERSECTION','set'):'set',
+            ('int', 'PLUSMAP', 'set'): 'set',
+            ('int', 'MINUSMAP', 'set'): 'set',
+            ('int', 'TIMESMAP', 'set'): 'set',
+            ('int', 'DIVIDEMAP','set'): 'set',
+            ('int', 'MODULEMAP', 'set'): 'set'
         }
  
     def __init__(self, lefExp, operator, rightExp):

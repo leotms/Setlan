@@ -3,7 +3,7 @@ program {
         int i,j,k;
         bool b,c;
         set s;
-    in {
+    in
         i = 8;
         j = 12;
         k = 3;
@@ -16,7 +16,7 @@ program {
         # Segundo print
         print "Hello, world!";
 
-        # Tercer print 
-        print a;
-    }
+        #Comprobamos! Primero se hace el parentesis :D
+        k = i + (j + i);
+        #a = i + j;
 }
