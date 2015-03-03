@@ -509,35 +509,6 @@ class Operator(Expression):
         '/=' :'UNEQUAL',        
     }
 
-################################################################################
-#                       CHEQUEO DE OPERADORES BINARIOS                         #
-################################################################################
- 
-    # Chequeo generico de los tipos de los operadores binarios
-    # def binarysymbolcheck(operator, expleft, expright, types):
-        
-    #     for t in types:
-    #         t_return = None
-
-    #         if len(t) == 3:
-    #             t_left, t_right, t_return = t
-    #         else:
-    #             t_left, t_right = t
-
-    #         if (expleft, expright) == (t_left, t_right):
-    #             if t_return is not None:
-    #                 return t_return
-    #             else:
-    #                 expright
-
-    #     # Muestra error cuando no es soportada la operacion binaria
-    #     if expleft is not None and expright is not None: pass
-    
-                
-
-
-################################################################################
-
     def __init__(self,operator):
         self.operator = operator
         self.name     = operator_dicc[operator]
