@@ -71,12 +71,13 @@ class Assign(Expression):
         RightExpType  = self.rightExp.symbolcheck()
         LeftIdentType = self.leftIdent.symbolcheck()
 
-        #Verificamos que la asignacion cumpla el tipo del identificador
-        if LeftIdentType != RightExpType: 
-            mensaje  = "ERROR: No se puede asignar '" + RightExpType \
-                       + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
-                       + str(LeftIdentType) + "'"
-            type_error_list.append(mensaje)
+        if LeftIdentType and RightExpType:
+            #Verificamos que la asignacion cumpla el tipo del identificador
+            if LeftIdentType != RightExpType: 
+                mensaje  = "ERROR: No se puede asignar '" + RightExpType \
+                           + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
+                           + str(LeftIdentType) + "'"
+                type_error_list.append(mensaje)
 
 # Clase para la impresion por consola
 class Print(Expression):
@@ -367,10 +368,15 @@ class Parenthesis(Expression):
     def __init__(self, exp):
         self.type = 'PARENTHESIS'
         self.exp  = exp
+        self.alcance = tablaSimbolos()
 
     def printTree(self,level):
         printValueIdented(self.type, level)
         self.exp.printTree(level + 1)
+
+    def symbolcheck(self):
+        empilar(self.exp, self.alcance)
+        return self.exp.symbolcheck()
 
 # Clase para definir un Conjunto.
 class Set(Expression):
@@ -408,16 +414,47 @@ class Type(Expression):
 
 #Classe para los Operadores Binarios
 class BinaryOperator(Expression):
+
+    global binaryOperatorTypeTuples
+    binaryOperatorTypeTuples = {
+            ('int', 'TIMES', 'int')  : 'int',
+            ('int', 'PLUS', 'int')   : 'int',
+            ('int', 'MINUS', 'int')  : 'int',
+            ('int', 'DIVIDE', 'int') : 'int',
+            ('int', 'MODULE', 'int') : 'int'
+        }
  
     def __init__(self, lefExp, operator, rightExp):
         self.lefExp   = lefExp
         self.operator = Operator(operator)
         self.rightExp = rightExp
+        self.alcance  = tablaSimbolos()
  
     def printTree(self, level):
         self.operator.printTree(level)
         self.lefExp.printTree(level + 1)
         self.rightExp.printTree(level + 1)
+
+    def symbolcheck(self):
+        #Pasamos la tabla de simbolos
+        empilar(self.lefExp, self.alcance)
+        empilar(self.rightExp, self.alcance)
+        #Verificamos los tipos de cada operando
+        lefExpType     = self.lefExp.symbolcheck()
+        rightExpType   = self.rightExp.symbolcheck()
+        operatorName   = self.operator.symbolcheck()
+
+        print lefExpType, rightExpType, operatorName
+
+        newTuple = (lefExpType, operatorName, rightExpType)
+        if newTuple in binaryOperatorTypeTuples:
+            return binaryOperatorTypeTuples[newTuple]
+        else:
+            mensaje = "ERROR: No se puede aplicar '" + self.operator.name\
+                      + "' en operandos de tipo '" + lefExpType\
+                      + "' y '" + rightExpType + "'."
+            type_error_list.append(mensaje)
+            return False
 
 #Clase para los Oeradores Unarios
 class UnaryOperator(Expression):
@@ -468,25 +505,25 @@ class Operator(Expression):
 #                       CHEQUEO DE OPERADORES BINARIOS                         #
 ################################################################################
  
-# Chequeo generico de los tipos de los operadores binarios
-def binarysymbolcheck(operator, expleft, expright, types):
-    
-    for t in types:
-        t_return = None
+    # Chequeo generico de los tipos de los operadores binarios
+    # def binarysymbolcheck(operator, expleft, expright, types):
+        
+    #     for t in types:
+    #         t_return = None
 
-        if len(t) == 3:
-            t_left, t_right, t_return = t
-        else:
-            t_left, t_right = t
+    #         if len(t) == 3:
+    #             t_left, t_right, t_return = t
+    #         else:
+    #             t_left, t_right = t
 
-        if (expleft, expright) == (t_left, t_right):
-            if t_return is not None:
-                return t_return
-            else:
-                expright
+    #         if (expleft, expright) == (t_left, t_right):
+    #             if t_return is not None:
+    #                 return t_return
+    #             else:
+    #                 expright
 
-    # Muestra error cuando no es soportada la operacion binaria
-    if expleft is not None and expright is not None: pass
+    #     # Muestra error cuando no es soportada la operacion binaria
+    #     if expleft is not None and expright is not None: pass
     
                 
 
@@ -496,7 +533,12 @@ def binarysymbolcheck(operator, expleft, expright, types):
     def __init__(self,operator):
         self.operator = operator
         self.name     = operator_dicc[operator]
+
+    def __str__(self):
+        return self.name
  
     def printTree(self,level):
         printValueIdented(self.name +" "+ self.operator, level)
 
+    def symbolcheck(self):
+        return self.name
