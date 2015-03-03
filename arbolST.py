@@ -46,6 +46,7 @@ class Program(Expression):
         if self.statement.symbolcheck():
             return self.alcance
 
+#Clase para la asignacion de expresiones
 class Assign(Expression):
 
     def __init__(self, leftIdent, rightExp):
@@ -66,15 +67,18 @@ class Assign(Expression):
         empilar(self.rightExp, self.alcance)
         empilar(self.leftIdent, self.alcance)
     
+        #Buscamos los tipos
         RightExpType  = self.rightExp.symbolcheck()
         LeftIdentType = self.leftIdent.symbolcheck()
 
+        #Verificamos que la asignacion cumpla el tipo del identificador
         if LeftIdentType != RightExpType: 
             mensaje  = "ERROR: No se puede asignar '" + RightExpType \
                        + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
-                       + str(LeftIdentType) + "'"###########################################
+                       + str(LeftIdentType) + "'"
             type_error_list.append(mensaje)
 
+# Clase para la impresion por consola
 class Print(Expression):
  
     def __init__(self, printType, elements):
@@ -92,11 +96,14 @@ class Print(Expression):
         for element in self.elements:
             empilar(element, self.alcance)
             elemtype = element.symbolcheck()
+    
+            #Verificamos que se impriman expresiones de tipos permitidos
             if not elemtype in accepted_types:
                 mensaje =  "ERROR: No se puede imprimir '"\
                            + elemtype + "'."
                 type_error_list.append(mensaje)
 
+# Clase para la entrada de datos
 class Scan(Expression):
     
     def __init__(self, identifier):
@@ -107,8 +114,16 @@ class Scan(Expression):
         printValueIdented(self.type,level)
         self.value.printTree(level + 1)
 
-    def checkType(self):
-        pass
+    def symbolcheck(self):
+        accepted_types = ['int','bool']
+        empilar(self.value, self.alcance)
+        valueType = self.value.symbolcheck()
+
+        #Verificamos que se admita el tipo permitido
+        if not valueType in accepted_types:
+            mensaje = "ERROR: scan no admite valores de tipo '"\
+                      + valueType + "'."   
+            type_error_list.append(mensaje) 
 
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
