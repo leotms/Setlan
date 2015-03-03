@@ -69,10 +69,6 @@ class Assign(Expression):
         RightExpType  = self.rightExp.symbolcheck()
         LeftIdentType = self.leftIdent.symbolcheck()
 
-        print self.leftIdent, LeftIdentType, RightExpType
-        if RightExpType is not None:
-            self.alcance.contains(self.leftIdent)
-
         if LeftIdentType != RightExpType: 
             mensaje  = "ERROR: No se puede asignar '" + RightExpType \
                        + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
@@ -94,6 +90,7 @@ class Print(Expression):
         
         accepted_types = ['string','int','bool','set']
         for element in self.elements:
+            empilar(element, self.alcance)
             elemtype = element.symbolcheck()
             if not elemtype in accepted_types:
                 mensaje =  "ERROR: No se puede imprimir '"\
