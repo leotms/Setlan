@@ -82,7 +82,7 @@ class tablaSimbolos(object):
         if self.symbols:
             return (variable in self.symbols)
         if self.parent:
-            return self/parent.contains(variable)
+            return self.parent.globalContains(variable)
         return False
 
     # Busca una variable de manera global declarada en la tabla 

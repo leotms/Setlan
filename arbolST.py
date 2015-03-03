@@ -63,15 +63,13 @@ class Assign(Expression):
 		self.rightExp.printTree(level + 2)
 
     def symbolcheck(self):
-        
         empilar(self.rightExp, self.alcance)
         empilar(self.leftIdent, self.alcance)
     
         RightExpType  = self.rightExp.symbolcheck()
         LeftIdentType = self.leftIdent.symbolcheck()
 
-        print LeftIdentType, RightExpType 
-
+        print self.leftIdent, LeftIdentType, RightExpType
         if RightExpType is not None:
             self.alcance.contains(self.leftIdent)
 
@@ -93,6 +91,7 @@ class Print(Expression):
             element.printTree(level + 1)
 
     def symbolcheck(self):
+        
         accepted_types = ['string','int','bool','set']
         for element in self.elements:
             elemtype = element.symbolcheck()
@@ -137,6 +136,7 @@ class Block(Expression):
         printValueIdented("BLOCK_END", level)
 
     def symbolcheck(self):
+        
         if self.declaraciones:
             empilar(self.declaraciones, self.alcance)
             self.declaraciones.symbolcheck()
@@ -179,6 +179,7 @@ class Declaration(Expression):
             printValueIdented(identifier, level + 2)
 
     def symbolcheck(self):
+       
         for var in self.list_id:
             if self.alcance.contains(var):
                 print "redeclaracion de " + var
@@ -324,8 +325,8 @@ class Identifier(Expression):
 		printValueIdented(self.identifier, level + 1)
 
     def symbolcheck(self): 
-
-        if self.alcance.contains(self.identifier):
+        
+        if self.alcance.globalContains(self.identifier):
             identifier = self.alcance.buscar(self.identifier)
             return identifier.type
         else:
