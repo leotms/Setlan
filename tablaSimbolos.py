@@ -57,17 +57,25 @@ class tablaSimbolos(object):
 
     # Imprime los simbolos de la tabla actual y de sus sucesoras.
     def printTable(self, level):
+        
         # La tabla actual    
         if self.symbols != {}:
             printValueIdented("SCOPE",level)
             for symbol in self.symbols:
                 self.symbols[symbol].printTable(level + 1)
-            printValueIdented("END_SCOPE\n",level)
-
-        # Se imprimen los hijos
-        if self.children:
+            # Se imprimen los hijos
+            if self.children:
+                for child in self.children:
+                    child.printTable(level + 1)
+            printValueIdented("END_SCOPE",level)
+        # Si la tabla solo tiene hijos, se imprimen
+        elif self.children:
             for child in self.children:
-                child.printTable(level + 1)
+                child.printTable(level)    
+        # Si la tabla es vacia      
+        else:
+            printValueIdented("SCOPE",level)
+            printValueIdented("END_SCOPE",level)
 
     # Comprueba si una variable esta delcarada en la tabla
     # de simbolos actual

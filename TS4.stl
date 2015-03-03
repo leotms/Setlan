@@ -25,6 +25,6 @@ program {
         # Segundo print
         print "Hello, world!";
 
-        scan s;
+        #scan s;
     }
 }
