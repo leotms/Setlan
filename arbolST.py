@@ -27,7 +27,7 @@ def empilar(objeto, alcance):
 
 # Clase Expression.
 class Expression:
-	pass
+    pass
 
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
@@ -37,15 +37,16 @@ class Program(Expression):
         self.statement = statement
         self.alcance   = tablaSimbolos()
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		self.statement.printTree(level+1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        self.statement.printTree(level+1)
 
     def symbolcheck(self):
         empilar(self.statement, self.alcance)
         if self.statement.symbolcheck():
             return self.alcance
 
+#Clase para la asignacion de expresiones
 class Assign(Expression):
 
     def __init__(self, leftIdent, rightExp):
@@ -53,34 +54,38 @@ class Assign(Expression):
         self.leftIdent = leftIdent
         self.rightExp  = rightExp
 
-	def printTree(self,level):
-		printValueIdented(self.type, level)
-		#Impresion del identificador asignado
-		printValueIdented("IDENTIFIER", level + 1)
-		self.leftIdent.printTree(level + 2)
-		#Impresion de la expresion asignada
-		printValueIdented("VALUE", level + 1)
-		self.rightExp.printTree(level + 2)
+    def printTree(self,level):
+        printValueIdented(self.type, level)
+        #Impresion del identificador asignado
+        printValueIdented("IDENTIFIER", level + 1)
+        self.leftIdent.printTree(level + 2)
+        #Impresion de la expresion asignada
+        printValueIdented("VALUE", level + 1)
+        self.rightExp.printTree(level + 2)
 
     def symbolcheck(self):
-        
         empilar(self.rightExp, self.alcance)
         empilar(self.leftIdent, self.alcance)
     
+        #Buscamos los tipos
         RightExpType  = self.rightExp.symbolcheck()
         LeftIdentType = self.leftIdent.symbolcheck()
 
-        print LeftIdentType, RightExpType 
+        if LeftIdentType and RightExpType:
+            #Verificamos que la asignacion cumpla el tipo del identificador
+            if LeftIdentType != RightExpType: 
+                mensaje  = "ERROR: No se puede asignar '" + RightExpType \
+                           + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
+                           + str(LeftIdentType) + "'"
+                type_error_list.append(mensaje)
 
-        if RightExpType is not None:
-            self.alcance.contains(self.leftIdent)
+        if LeftIdentType:
+            identifier = self.alcance.buscar(self.leftIdent.identifier)
+            if not identifier.modifiable:
+                mensaje = "ERROR: No se puede modificar " + self.leftIdent
+                type_error_list.append(mensaje)
 
-        if LeftIdentType != RightExpType: 
-            mensaje  = "ERROR: No se puede asignar '" + RightExpType \
-                       + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
-                       + str(LeftIdentType) + "'"###########################################
-            type_error_list.append(mensaje)
-
+# Clase para la impresion por consola
 class Print(Expression):
  
     def __init__(self, printType, elements):
@@ -92,9 +97,20 @@ class Print(Expression):
         for element in self.elements:
             element.printTree(level + 1)
 
-    def checkType(self):
-        pass
+    def symbolcheck(self):
+        
+        accepted_types = ['string','int','bool','set']
+        for element in self.elements:
+            empilar(element, self.alcance)
+            elemtype = element.symbolcheck()
+    
+            #Verificamos que se impriman expresiones de tipos permitidos
+            if not elemtype in accepted_types:
+                mensaje =  "ERROR: No se puede imprimir '"\
+                           + elemtype + "'."
+                type_error_list.append(mensaje)
 
+# Clase para la entrada de datos
 class Scan(Expression):
     
     def __init__(self, identifier):
@@ -105,8 +121,16 @@ class Scan(Expression):
         printValueIdented(self.type,level)
         self.value.printTree(level + 1)
 
-    def checkType(self):
-        pass
+    def symbolcheck(self):
+        accepted_types = ['int','bool']
+        empilar(self.value, self.alcance)
+        valueType = self.value.symbolcheck()
+
+        #Verificamos que se admita el tipo permitido
+        if not valueType in accepted_types:
+            mensaje = "ERROR: scan no admite valores de tipo '"\
+                      + valueType + "'."   
+            type_error_list.append(mensaje) 
 
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
@@ -131,6 +155,7 @@ class Block(Expression):
         printValueIdented("BLOCK_END", level)
 
     def symbolcheck(self):
+        
         if self.declaraciones:
             empilar(self.declaraciones, self.alcance)
             self.declaraciones.symbolcheck()
@@ -174,13 +199,9 @@ class Declaration(Expression):
 
     def symbolcheck(self):
         for var in self.list_id:
-            if self.alcance.contains(var):
-                print "redeclaracion de " + var
-            else:
-                self.alcance.insert(var, self.type.type)
+            self.alcance.insert(var, self.type.type)
 
-#################################################################
-
+#Clase para los condicionales
 class If(Expression):   
     
     def __init__(self,condition,inst_if,inst_else = None):
@@ -201,6 +222,19 @@ class If(Expression):
             self.inst_else.printTree(level +1)
         printValueIdented('END_IF',level)
 
+    def symbolcheck(self):
+        empilar(self.condition, self.alcance)
+        
+        conditionType = self.condition.symbolcheck()
+
+        if self.inst_else:
+            empilar(self.inst_else, self.alcance)
+            inst_else_Type = self.inst_else.symbolcheck()
+
+        if conditionType != 'bool':
+            mensaje = "ERROR: La condicion del if no es booleana"
+            type_error_list.append(mensaje) 
+
 class For(Expression):
     
     def __init__(self,identifier,direction,expre,inst):
@@ -219,6 +253,23 @@ class For(Expression):
         printValueIdented('DO',level + 1)
         self.inst.printTree(level + 2)
         printValueIdented('END_FOR',level)
+
+    def symbolcheck(self):
+        #Creamos la tabla para el alcance local del for        
+        alcanceFor = tablaSimbolos()
+        alcanceFor.parent = self.alcance
+        alcanceFor.insert(self.identifier, 'int', False)
+        self.alcance.children.append(alcanceFor)
+        
+        empilar(self.expre, self.alcance)
+        empilar(self.inst, alcanceFor)
+
+        expreType = self.expre.symbolcheck()
+
+        if expreType != 'set':
+            mensaje = "ERROR: La expresion " + self.expre\
+                      + " debe ser de tipo 'set'."   
+            type_error_list.append(mensaje) 
 
 class Direction(Expression):
     
@@ -247,6 +298,19 @@ class RepeatWhileDo(Expression):
         printValueIdented('DO',level)
         self.inst2.printTree(level + 1)
 
+    def symbolcheck(self):
+        
+        empilar(self.inst1, self.alcance)
+        empilar(self.expre, self.alcance)
+        empilar(self.inst2, self.alcance)
+
+        expreType = self.expre.symbolcheck()
+        #Verificamos que la condicion sea booleana
+        if expreType != 'bool':
+            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            type_error_list.append(mensaje)        
+
+#Clase para los ciclos while condicion do
 class WhileDo(Expression):
     
     def __init__(self,expre,inst):
@@ -262,6 +326,18 @@ class WhileDo(Expression):
         self.inst.printTree(level + 1)
         printValueIdented('END_WHILE',level)
 
+    def symbolcheck(self):
+        
+        empilar(self.expre, self.alcance)
+        empilar(self.inst, self.alcance)
+
+        expreType = self.expre.symbolcheck()
+        #Verificamos que la condicion sea booleana
+        if expreType != 'bool':
+            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            type_error_list.append(mensaje) 
+            
+#Clase para los ciclos repeat instruccion while condicion do
 class RepeatWhile(Expression):
     
     def __init__(self,inst,expre):
@@ -274,6 +350,17 @@ class RepeatWhile(Expression):
         self.inst.printTree(level + 1)
         printValueIdented('condition',level + 1)
         self.expre.printTree(level + 2) 
+
+    def symbolcheck(self):
+
+        empilar(self.inst, self.alcance)
+        empilar(self.expre, self.alcance)
+
+        expreType = self.expre.symbolcheck()
+        #Verificamos que la condicion sea booleana
+        if expreType != 'bool':
+            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            type_error_list.append(mensaje) 
 
 class Number(Expression):
     
@@ -295,12 +382,12 @@ class String(Expression):
         self.type   = "STRING"
         self.string = string
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		printValueIdented(self.string, level + 1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        printValueIdented(self.string, level + 1)
 
     def symbolcheck(self):
-        return 'STRING'
+        return 'string'
 
 # Clase para definir un identificador o variable.
 class Identifier(Expression):
@@ -313,13 +400,13 @@ class Identifier(Expression):
     def __str__(self):
         return self.identifier
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		printValueIdented(self.identifier, level + 1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        printValueIdented(self.identifier, level + 1)
 
     def symbolcheck(self): 
 
-        if self.alcance.contains(self.identifier):
+        if self.alcance.globalContains(self.identifier):
             identifier = self.alcance.buscar(self.identifier)
             return identifier.type
         else:
@@ -348,10 +435,15 @@ class Parenthesis(Expression):
     def __init__(self, exp):
         self.type = 'PARENTHESIS'
         self.exp  = exp
+        self.alcance = tablaSimbolos()
 
     def printTree(self,level):
         printValueIdented(self.type, level)
         self.exp.printTree(level + 1)
+
+    def symbolcheck(self):
+        empilar(self.exp, self.alcance)
+        return self.exp.symbolcheck()
 
 # Clase para definir un Conjunto.
 class Set(Expression):
@@ -389,16 +481,68 @@ class Type(Expression):
 
 #Classe para los Operadores Binarios
 class BinaryOperator(Expression):
+
+    global binaryOperatorTypeTuples
+    binaryOperatorTypeTuples = {
+            ('int', 'TIMES', 'int'): 'int',
+            ('int', 'PLUS', 'int'): 'int',
+            ('int', 'MINUS', 'int'): 'int',
+            ('int', 'DIVIDE', 'int'): 'int',
+            ('int', 'MODULE', 'int'): 'int',
+            ('set', 'UNION', 'set'): 'set',
+            ('set', 'DIFERENCE','set'): 'set',
+            ('set', 'INSERSECTION','set'):'set',
+            ('int', 'PLUSMAP', 'set'): 'set',
+            ('int', 'MINUSMAP', 'set'): 'set',
+            ('int', 'TIMESMAP', 'set'): 'set',
+            ('int', 'DIVIDEMAP','set'): 'set',
+            ('int', 'MODULEMAP', 'set'): 'set',
+            ('bool', 'OR', 'bool'): 'bool',
+            ('bool', 'AND', 'bool'): 'bool',
+            ('int', 'LESS','int'): 'bool',
+            ('int', 'GREAT', 'int'): 'bool',
+            ('int', 'LESSEQ', 'int'): 'bool',
+            ('int', 'GREATEQ', 'int'): 'bool',
+            ('int', 'EQUAL', 'int'): 'bool',
+            ('bool', 'EQUAL', 'bool'): 'bool',
+            ('set', 'EQUAL', 'set'): 'set',
+            ('int', 'UNEQUAL', 'int'): 'bool',
+            ('bool', 'UNEQUAL', 'bool'): 'bool',
+            ('set', 'UNEQUAL', 'set'): 'bool',
+            ('int', 'CONTAINMENT', 'set'): 'bool'
+        }
  
     def __init__(self, lefExp, operator, rightExp):
         self.lefExp   = lefExp
         self.operator = Operator(operator)
         self.rightExp = rightExp
+        self.alcance  = tablaSimbolos()
  
     def printTree(self, level):
         self.operator.printTree(level)
         self.lefExp.printTree(level + 1)
         self.rightExp.printTree(level + 1)
+
+    def symbolcheck(self):
+        #Pasamos la tabla de simbolos
+        empilar(self.lefExp, self.alcance)
+        empilar(self.rightExp, self.alcance)
+        #Verificamos los tipos de cada operando
+        lefExpType     = self.lefExp.symbolcheck()
+        rightExpType   = self.rightExp.symbolcheck()
+        operatorName   = self.operator.symbolcheck()
+
+        print lefExpType, operatorName ,rightExpType
+
+        newTuple = (lefExpType, operatorName, rightExpType)
+        if newTuple in binaryOperatorTypeTuples:
+            return binaryOperatorTypeTuples[newTuple]
+        else:
+            mensaje = "ERROR: No se puede aplicar '" + self.operator.name\
+                      + "' en operandos de tipo '" + lefExpType\
+                      + "' y '" + rightExpType + "'."
+            type_error_list.append(mensaje)
+            return False
 
 #Clase para los Oeradores Unarios
 class UnaryOperator(Expression):
@@ -446,38 +590,16 @@ class Operator(Expression):
     }
 
 ################################################################################
-#                       CHEQUEO DE OPERADORES BINARIOS                         #
-################################################################################
- 
-# Chequeo generico de los tipos de los operadores binarios
-def binarysymbolcheck(operator, expleft, expright, types):
-    
-    for t in types:
-        t_return = None
-
-        if len(t) == 3:
-            t_left, t_right, t_return = t
-        else:
-            t_left, t_right = t
-
-        if (expleft, expright) == (t_left, t_right):
-            if t_return is not None:
-                return t_return
-            else:
-                expright
-
-    # Muestra error cuando no es soportada la operacion binaria
-    if expleft is not None and expright is not None: pass
-    
-                
-
-
-################################################################################
 
     def __init__(self,operator):
         self.operator = operator
         self.name     = operator_dicc[operator]
+
+    def __str__(self):
+        return self.name
  
     def printTree(self,level):
         printValueIdented(self.name +" "+ self.operator, level)
 
+    def symbolcheck(self):
+        return self.name

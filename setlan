@@ -14,14 +14,21 @@ import sys
 if __name__ == '__main__':
     
     #Comprobacion de los parametros de entrada. 
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print "Error: Parametros de entrada incorrectos."
         exit()
+    if len(sys.argv) > 2:
+        knownFlags = ['-t','-a','-s']
+        flags = sys.argv[2:]
+        for flag in flags:
+            if not flag in knownFlags:
+                print "Error: No se reconoce el flag: " + flag
+                exit() 
 
     #Abrimos el archivo del codigo setlan
     codeFile = open(sys.argv[1], 'r')
     code = codeFile.read()
-    
+
     #Ejecutamos el Parser
     arbol = parser.build_parser(code)
 
@@ -37,10 +44,24 @@ if __name__ == '__main__':
             print parser.parser_errorList[0]
 
         else:
-            #arbol.printTree(0)
+
+            # Realizamos el chequeo de tipos
             symTable = arbol.symbolcheck()
+
             if parser.type_error_list:
                 for error in parser.type_error_list:
                     print error
-            else:
+
+            # Involucramos los flags, para la impresion.
+            if '-t' in sys.argv:
+                print "\t ------- LEXER TOKENS -------"
+                parser.build_lexer(code)
+                print "\t ---------------------------- \n"
+            if '-a' in sys.argv:
+                print "\t ------- AST -------"
+                arbol.printTree(0)
+                print "\t ------------------- \n"
+            if '-s' in sys.argv:
+                print "\t ------- TABLA DE SIMBOLOS -------"
                 symTable.printTable(0)
+                print "\t --------------------------------- \n"

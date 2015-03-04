@@ -11,7 +11,7 @@ Ult. Modificacion el 09/02/2015
 
 import ply.yacc  as yacc
 from   arbolST   import *
-from   lexer     import tokens, lexer_errorList, find_column
+from   lexer     import tokens, lexer_errorList, find_column, build_lexer
 
 ###############################################################################
 #									INICIO				   					  #

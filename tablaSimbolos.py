@@ -30,9 +30,10 @@ class Simbolo(object):
         'set' : '{}'
     }
 
-    def __init__(self, name, type, value = None):
-        self.name = name
-        self.type = type
+    def __init__(self, name, type, modifiable, value = None):
+        self.name       = name
+        self.type       = type
+        self.modifiable = modifiable
         # Colocamos el valor por defecto
         if value == None:
             self.value = symbol_default[type]
@@ -40,9 +41,10 @@ class Simbolo(object):
             self.value = value
 
     def printTable(self, level):
-        string  = "Variable: " + self.name
+        string  = "Variable: " + str(self.name)
         string += " | Type: "   + self.type
         string += " | Value: " + str(self.value)
+        string += " | Modifiable: " + str(self.modifiable)
         printValueIdented(string, level)
 
 # Clase Tabla de Simbolos, provee lo necesario para construir una 
@@ -58,17 +60,25 @@ class tablaSimbolos(object):
 
     # Imprime los simbolos de la tabla actual y de sus sucesoras.
     def printTable(self, level):
+        
         # La tabla actual    
         if self.symbols != {}:
             printValueIdented("SCOPE",level)
             for symbol in self.symbols:
                 self.symbols[symbol].printTable(level + 1)
-            printValueIdented("END_SCOPE\n",level)
-
-        # Se imprimen los hijos
-        if self.children:
+            # Se imprimen los hijos
+            if self.children:
+                for child in self.children:
+                    child.printTable(level + 1)
+            printValueIdented("END_SCOPE",level)
+        # Si la tabla solo tiene hijos, se imprimen
+        elif self.children:
             for child in self.children:
-                child.printTable(level + 1)
+                child.printTable(level)    
+        # Si la tabla es vacia      
+        else:
+            printValueIdented("SCOPE",level)
+            printValueIdented("END_SCOPE",level)
 
     # Comprueba si una variable esta delcarada en la tabla
     # de simbolos actual
@@ -81,24 +91,33 @@ class tablaSimbolos(object):
     # simbolos global
     def globalContains(self, variable):
         if self.symbols:
-            return (variable in self.symbols)
+            if (variable in self.symbols):
+                return True
+            elif self.parent:
+                return self.parent.globalContains(variable)
         if self.parent:
-            return self/parent.contains(variable)
+            return self.parent.globalContains(variable)
         return False
 
     # Busca una variable de manera global declarada en la tabla 
     # de simbolos.
     def buscar(self, variable):
-        if variable in self.symbols:
-            return self.symbols[variable]
+        #Si tiene simbolos buscamos primero alli
+        if self.symbols:
+            if variable in self.symbols:
+                return self.symbols[variable]
+            else:
+                if self.parent:
+                    return self.parent.buscar(variable)
+        elif self.parent:
+            return self.parent.buscar(variable)
         else:
-            if self.parent:
-                return self.parent.buscar(variable)
+            print "Variable " + str(variable) + " no esta definida."
 
     #Inserta un simbolo en la tabla de simbolos local
-    def insert(self, variable, dataType):
+    def insert(self, variable, dataType, modifiable = True):
         if not self.contains(variable):
-            self.symbols[variable] = Simbolo(variable, dataType)
+            self.symbols[variable] = Simbolo(variable, dataType, modifiable)
         else:
             string = "Variable '" + str(variable) + "' ya esta definida."
             print(string)

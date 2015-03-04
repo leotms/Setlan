@@ -124,10 +124,15 @@ def find_column(code,t):
 def getLineAndColumn(code,t):
     return '(Línea {0}, Columna {1})' .format(t.lexer.lineno, find_column(code,t))
 
+#Retorna el string necesario para la impresion
+def getTokenString(code, t):
+    return 'token {0:15} ({1})\t'.format(t.type, t.value) + getLineAndColumn(code,t)
+
 #Token para los identificadores
 def t_IDENTIFIER(t):
     r'[a-zA-Z_]+[a-zA-Z0-9_]*'
     t.type = reservedWords.get(t.value,'IDENTIFIER')
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
 #Tokens para los Numeros
@@ -135,58 +140,174 @@ def t_NUMBER(t):
     r'\d+'
     
     if int(t.value) > 2147483648:
-        t.lexer.errorList.append('Error: overflow de un numero entero.' \
+        lexer_errorList.append('Error: overflow de un numero entero.' \
                                  + getLineAndColumn(t.lexer.lexdata,t)) 
-
+    
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
 #Token para los strings
 def t_STRING(t):
     r'"[^"\\\r\n]*(?:\\.[^"\\\r\n]*)*"'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
 #Tokens para Operadores de Conjuntos
 
-t_UNION = r'\+\+'
-t_DIFERENCE = r'\\'
-t_MAXVALUE = r'>\?'
-t_MINVALUE = r'<\?'
-t_NUMELEMENTS = r'\$\?'
-t_CONTAINMENT = r'@'
+def t_UNION(t):
+    r'\+\+'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_DIFERENCE(t):
+    r'\\'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_MAXVALUE(t):
+    r'>\?'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_MINVALUE(t):
+    r'<\?'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_NUMELEMENTS(t):
+    r'\$\?'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_CONTAINMENT(t):
+    r'@'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
 
 #Tokens para los Operadores de Mapeo sobre Conjuntos
-t_PLUSMAP = r'<\+>'
-t_MINUSMAP = r'<->'
-t_TIMESMAP = r'<\*>'
-t_DIVIDEMAP = r'</>'
-t_MODULEMAP = r'<%>'
+def t_PLUSMAP(t):
+    r'<\+>'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_MINUSMAP(t):
+    r'<->'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_TIMESMAP(t):
+    r'<\*>'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_DIVIDEMAP(t):
+    r'</>'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_MODULEMAP(t):
+    r'<%>'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
 
 #Tokens para los Operadores Simples
-t_PLUS = r'\+'
-t_MINUS = r'\-'
-t_TIMES = r'\*'
-t_UNEQUAL = r'/='
-t_DIVIDE = r'/'
-t_MODULE = r'%'
-t_EQUAL = r'=='
-t_INTERSECTION = r'><'
-t_LESS = r'<'
-t_LESSEQ = r'<='
-t_GREAT = r'>'
-t_GREATEQ = r'>='
+def t_PLUS(t):
+    r'\+'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_MINUS(t):
+    r'\-'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_TIMES(t):
+    r'\*'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_UNEQUAL(t):
+    r'/='
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_DIVIDE(t):
+    r'/'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_MODULE(t):
+    r'%'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_EQUAL(t):
+    r'=='
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_INTERSECTION(t):
+    r'><'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_LESS(t):
+    r'<'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_LESSEQ(t):
+    r'<='
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_GREAT(t):
+    r'>'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_GREATEQ(t):
+    r'>='
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
 
 #Token para los simbolos del lenguaje
-t_ASSIGN = r'='
-t_COMMA = r','
-t_SEMICOLON = r';'
+def t_ASSIGN(t):
+    r'='
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_COMMA(t):
+    r','
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_SEMICOLON(t):
+    r';'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
 
 #Tokens para las expresiones
-t_LPARENTHESIS = r'\('
-t_RPARENTHESIS = r'\)'
+def t_LPARENTHESIS(t):
+    r'\('
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_RPARENTHESIS(t):
+    r'\)'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
 
 #Tokens para los Bloques
-t_OPENCURLY = r'{'
-t_CLOSECURLY = r'}'
+def t_OPENCURLY(t):
+    r'{'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_CLOSECURLY(t):
+    r'}'
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
 
 #Manejo de errores  
 def t_error(t):
@@ -197,19 +318,22 @@ def t_error(t):
 
 #Lista de errores del Lexer
 lexer_errorList = []
+lexer_tokenList = []
 
 #Constructor del lexer
 lex.lex()
 
 def build_lexer(code):
     lexer = lex.lex()
-    tokenList = []
 
     #pasamos el codigo al lexer.
     lexer.input(code)
 
-    for tok in lexer:
-        tokenList.append(tok)
+    # for tok in lexer:
+    #     tokenList.append(tok)
+
+    for tok in lexer_tokenList:
+        print tok
 
 if __name__ == '__main__':
     pass
