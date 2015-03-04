@@ -211,5 +211,8 @@ def build_lexer(code):
     for tok in lexer:
         tokenList.append(tok)
 
+    for tok in tokenList:
+        print tok
+
 if __name__ == '__main__':
     pass
