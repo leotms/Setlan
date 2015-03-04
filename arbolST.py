@@ -27,7 +27,7 @@ def empilar(objeto, alcance):
 
 # Clase Expression.
 class Expression:
-	pass
+    pass
 
 #Siempre es el primer elemento de un codigo setlan. 
 class Program(Expression):
@@ -37,9 +37,9 @@ class Program(Expression):
         self.statement = statement
         self.alcance   = tablaSimbolos()
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		self.statement.printTree(level+1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        self.statement.printTree(level+1)
 
     def symbolcheck(self):
         empilar(self.statement, self.alcance)
@@ -54,14 +54,14 @@ class Assign(Expression):
         self.leftIdent = leftIdent
         self.rightExp  = rightExp
 
-	def printTree(self,level):
-		printValueIdented(self.type, level)
-		#Impresion del identificador asignado
-		printValueIdented("IDENTIFIER", level + 1)
-		self.leftIdent.printTree(level + 2)
-		#Impresion de la expresion asignada
-		printValueIdented("VALUE", level + 1)
-		self.rightExp.printTree(level + 2)
+    def printTree(self,level):
+        printValueIdented(self.type, level)
+        #Impresion del identificador asignado
+        printValueIdented("IDENTIFIER", level + 1)
+        self.leftIdent.printTree(level + 2)
+        #Impresion de la expresion asignada
+        printValueIdented("VALUE", level + 1)
+        self.rightExp.printTree(level + 2)
 
     def symbolcheck(self):
         empilar(self.rightExp, self.alcance)
@@ -315,9 +315,9 @@ class String(Expression):
         self.type   = "STRING"
         self.string = string
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		printValueIdented(self.string, level + 1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        printValueIdented(self.string, level + 1)
 
     def symbolcheck(self):
         return 'string'
@@ -333,9 +333,9 @@ class Identifier(Expression):
     def __str__(self):
         return self.identifier
 
-	def printTree(self, level):
-		printValueIdented(self.type, level)
-		printValueIdented(self.identifier, level + 1)
+    def printTree(self, level):
+        printValueIdented(self.type, level)
+        printValueIdented(self.identifier, level + 1)
 
     def symbolcheck(self): 
         

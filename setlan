@@ -14,37 +14,41 @@ import sys
 if __name__ == '__main__':
     
     #Comprobacion de los parametros de entrada. 
-    if len(sys.argv) != 2:
+    if len(sys.argv) < 2:
         print "Error: Parametros de entrada incorrectos."
         exit()
 
     #Abrimos el archivo del codigo setlan
     codeFile = open(sys.argv[1], 'r')
     code = codeFile.read()
-    
-    lexer = parser.build_lexer(code)
-    for token in lexer.tokenList:
-        print(token)
 
-    # #Ejecutamos el Parser
-    # arbol = parser.build_parser(code)
+    #Ejecutamos el Parser
+    arbol = parser.build_parser(code)
 
 
-    # #Impresion en pantalla del primer error del Lexer
-    # #(si hay alguno). 
-    # if parser.lexer_errorList != []:
-    #     print parser.lexer_errorList[0]
-    # else: 
-    #     #Impresion en pantalla del primer error del Parser 
-    #     #(si hay alguno). 
-    #     if parser.parser_errorList != []:
-    #         print parser.parser_errorList[0]
+    #Impresion en pantalla del primer error del Lexer
+    #(si hay alguno). 
+    if parser.lexer_errorList != []:
+        print parser.lexer_errorList[0]
+    else: 
+        #Impresion en pantalla del primer error del Parser 
+        #(si hay alguno). 
+        if parser.parser_errorList != []:
+            print parser.parser_errorList[0]
 
-    #     else:
-    #         #arbol.printTree(0)
-    #         symTable = arbol.symbolcheck()
-    #         if parser.type_error_list:
-    #             for error in parser.type_error_list:
-    #                 print error
-    #         else:
-    #             symTable.printTable(0)
+        else:
+
+            # Realizamos el chequeo de tipos
+            symTable = arbol.symbolcheck()
+
+            if parser.type_error_list:
+                for error in parser.type_error_list:
+                    print error
+
+            # Involucramos los flags, para la impresion.
+            if '-t' in sys.argv:
+                parser.build_lexer(code)
+            if '-a' in sys.argv:
+                arbol.printTree(0)
+            if '-s' in sys.argv:
+                symTable.printTable(0)
