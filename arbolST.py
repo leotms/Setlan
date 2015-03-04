@@ -405,7 +405,7 @@ class Identifier(Expression):
 		printValueIdented(self.identifier, level + 1)
 
     def symbolcheck(self): 
-        
+
         if self.alcance.globalContains(self.identifier):
             identifier = self.alcance.buscar(self.identifier)
             return identifier.type
@@ -532,7 +532,7 @@ class BinaryOperator(Expression):
         rightExpType   = self.rightExp.symbolcheck()
         operatorName   = self.operator.symbolcheck()
 
-        print lefExpType, rightExpType, operatorName
+        print lefExpType, operatorName ,rightExpType
 
         newTuple = (lefExpType, operatorName, rightExpType)
         if newTuple in binaryOperatorTypeTuples:

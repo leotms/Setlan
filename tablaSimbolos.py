@@ -90,7 +90,10 @@ class tablaSimbolos(object):
     # simbolos global
     def globalContains(self, variable):
         if self.symbols:
-            return (variable in self.symbols)
+            if (variable in self.symbols):
+                return True
+            elif self.parent:
+                return self.parent.globalContains(variable)
         if self.parent:
             return self.parent.globalContains(variable)
         return False
