@@ -17,6 +17,13 @@ if __name__ == '__main__':
     if len(sys.argv) < 2:
         print "Error: Parametros de entrada incorrectos."
         exit()
+    if len(sys.argv) > 2:
+        knownFlags = ['-t','-a','-s']
+        flags = sys.argv[2:]
+        for flag in flags:
+            if not flag in knownFlags:
+                print "Error: No se reconoce el flag: " + flag
+                exit() 
 
     #Abrimos el archivo del codigo setlan
     codeFile = open(sys.argv[1], 'r')
@@ -47,8 +54,14 @@ if __name__ == '__main__':
 
             # Involucramos los flags, para la impresion.
             if '-t' in sys.argv:
+                print "\t ------- LEXER TOKENS -------"
                 parser.build_lexer(code)
+                print "\t ---------------------------- \n"
             if '-a' in sys.argv:
+                print "\t ------- AST -------"
                 arbol.printTree(0)
+                print "\t ------------------- \n"
             if '-s' in sys.argv:
+                print "\t ------- TABLA DE SIMBOLOS -------"
                 symTable.printTable(0)
+                print "\t --------------------------------- \n"
