@@ -78,15 +78,13 @@ class Assign(Expression):
                            + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
                            + str(LeftIdentType) + "'"
                 type_error_list.append(mensaje)
-################################################################################
+
         if LeftIdentType:
-            self.alcance.printTable(5)
             identifier = self.alcance.buscar(self.leftIdent.identifier)
             if not identifier.modifiable:
                 mensaje = "ERROR: No se puede modificar " + self.leftIdent
                 type_error_list.append(mensaje)
 
-################################################################################
 # Clase para la impresion por consola
 class Print(Expression):
  
@@ -261,7 +259,8 @@ class For(Expression):
         alcanceFor = tablaSimbolos()
         alcanceFor.parent = self.alcance
         alcanceFor.insert(self.identifier, 'int', False)
-
+        self.alcance.children.append(alcanceFor)
+        
         empilar(self.expre, self.alcance)
         empilar(self.inst, alcanceFor)
 
@@ -353,7 +352,15 @@ class RepeatWhile(Expression):
         self.expre.printTree(level + 2) 
 
     def symbolcheck(self):
-        pass
+
+        empilar(self.inst, self.alcance)
+        empilar(self.expre, self.alcance)
+
+        expreType = self.expre.symbolcheck()
+        #Verificamos que la condicion sea booleana
+        if expreType != 'bool':
+            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            type_error_list.append(mensaje) 
 
 class Number(Expression):
     

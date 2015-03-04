@@ -40,7 +40,7 @@ class Simbolo(object):
             self.value = value
 
     def printTable(self, level):
-        string  = "Variable: " + self.name
+        string  = "Variable: " + str(self.name)
         string += " | Type: "   + self.type
         string += " | Value: " + str(self.value)
         string += " | Modifiable: " + str(self.modifiable)
