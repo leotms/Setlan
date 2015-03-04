@@ -299,6 +299,19 @@ class RepeatWhileDo(Expression):
         printValueIdented('DO',level)
         self.inst2.printTree(level + 1)
 
+    def symbolcheck(self):
+        
+        empilar(self.inst1, self.alcance)
+        empilar(self.expre, self.alcance)
+        empilar(self.inst2, self.alcance)
+
+        expreType = self.expre.symbolcheck()
+        #Verificamos que la condicion sea booleana
+        if expreType != 'bool':
+            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            type_error_list.append(mensaje)        
+
+#Clase para los ciclos while condicion do
 class WhileDo(Expression):
     
     def __init__(self,expre,inst):
@@ -314,6 +327,18 @@ class WhileDo(Expression):
         self.inst.printTree(level + 1)
         printValueIdented('END_WHILE',level)
 
+    def symbolcheck(self):
+        
+        empilar(self.expre, self.alcance)
+        empilar(self.inst, self.alcance)
+
+        expreType = self.expre.symbolcheck()
+        #Verificamos que la condicion sea booleana
+        if expreType != 'bool':
+            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            type_error_list.append(mensaje) 
+            
+#Clase para los ciclos repeat instruccion while condicion do
 class RepeatWhile(Expression):
     
     def __init__(self,inst,expre):
@@ -326,6 +351,9 @@ class RepeatWhile(Expression):
         self.inst.printTree(level + 1)
         printValueIdented('condition',level + 1)
         self.expre.printTree(level + 2) 
+
+    def symbolcheck(self):
+        pass
 
 class Number(Expression):
     
