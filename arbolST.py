@@ -78,7 +78,15 @@ class Assign(Expression):
                            + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
                            + str(LeftIdentType) + "'"
                 type_error_list.append(mensaje)
+################################################################################
+        if LeftIdentType:
+            self.alcance.printTable(5)
+            identifier = self.alcance.buscar(self.leftIdent)
+            if not identifier.modifiable:
+                mensaje = "ERROR: No se puede modificar " + self.leftIdent
+                type_error_list.append(mensaje)
 
+################################################################################
 # Clase para la impresion por consola
 class Print(Expression):
  
@@ -192,15 +200,10 @@ class Declaration(Expression):
             printValueIdented(identifier, level + 2)
 
     def symbolcheck(self):
-       
         for var in self.list_id:
-            if self.alcance.contains(var):
-                print "redeclaracion de " + var
-            else:
-                self.alcance.insert(var, self.type.type)
+            self.alcance.insert(var, self.type.type)
 
-#################################################################
-
+#Clase para los condicionales
 class If(Expression):   
     
     def __init__(self,condition,inst_if,inst_else = None):
@@ -221,6 +224,19 @@ class If(Expression):
             self.inst_else.printTree(level +1)
         printValueIdented('END_IF',level)
 
+    def symbolcheck(self):
+        empilar(self.condition, self.alcance)
+        
+        conditionType = self.condition.symbolcheck()
+
+        if self.inst_else:
+            empilar(self.inst_else, self.alcance)
+            inst_else_Type = self.inst_else.symbolcheck()
+
+        if conditionType != 'bool':
+            mensaje = "ERROR: La condicion del if no es booleana"
+            type_error_list.append(mensaje) 
+
 class For(Expression):
     
     def __init__(self,identifier,direction,expre,inst):
@@ -239,6 +255,22 @@ class For(Expression):
         printValueIdented('DO',level + 1)
         self.inst.printTree(level + 2)
         printValueIdented('END_FOR',level)
+
+    def symbolcheck(self):
+        #Creamos la tabla para el alcance local del for        
+        alcanceFor = tablaSimbolos()
+        alcanceFor.parent = self.alcance
+        alcanceFor.insert(self.identifier, 'int', False)
+
+        empilar(self.expre, self.alcance)
+        empilar(self.inst, alcanceFor)
+
+        expreType = self.expre.symbolcheck()
+
+        if expreType != 'set':
+            mensaje = "ERROR: La expresion " + self.expre\
+                      + " debe ser de tipo 'set'."   
+            type_error_list.append(mensaje) 
 
 class Direction(Expression):
     
@@ -429,7 +461,20 @@ class BinaryOperator(Expression):
             ('int', 'MINUSMAP', 'set'): 'set',
             ('int', 'TIMESMAP', 'set'): 'set',
             ('int', 'DIVIDEMAP','set'): 'set',
-            ('int', 'MODULEMAP', 'set'): 'set'
+            ('int', 'MODULEMAP', 'set'): 'set',
+            ('bool', 'OR', 'bool'): 'bool',
+            ('bool', 'AND', 'bool'): 'bool',
+            ('int', 'LESS','int'): 'bool',
+            ('int', 'GREAT', 'int'): 'bool',
+            ('int', 'LESSEQ', 'int'): 'bool',
+            ('int', 'GREATEQ', 'int'): 'bool',
+            ('int', 'EQUAL', 'int'): 'bool',
+            ('bool', 'EQUAL', 'bool'): 'bool',
+            ('set', 'EQUAL', 'set'): 'set',
+            ('int', 'UNEQUAL', 'int'): 'bool',
+            ('bool', 'UNEQUAL', 'bool'): 'bool',
+            ('set', 'UNEQUAL', 'set'): 'bool',
+            ('int', 'CONTAINMENT', 'set'): 'bool'
         }
  
     def __init__(self, lefExp, operator, rightExp):
@@ -508,33 +553,6 @@ class Operator(Expression):
         '==' :'EQUAL',
         '/=' :'UNEQUAL',        
     }
-
-################################################################################
-#                       CHEQUEO DE OPERADORES BINARIOS                         #
-################################################################################
- 
-    # Chequeo generico de los tipos de los operadores binarios
-    # def binarysymbolcheck(operator, expleft, expright, types):
-        
-    #     for t in types:
-    #         t_return = None
-
-    #         if len(t) == 3:
-    #             t_left, t_right, t_return = t
-    #         else:
-    #             t_left, t_right = t
-
-    #         if (expleft, expright) == (t_left, t_right):
-    #             if t_return is not None:
-    #                 return t_return
-    #             else:
-    #                 expright
-
-    #     # Muestra error cuando no es soportada la operacion binaria
-    #     if expleft is not None and expright is not None: pass
-    
-                
-
 
 ################################################################################
 

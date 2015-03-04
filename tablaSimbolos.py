@@ -29,9 +29,10 @@ class Simbolo(object):
         'set' : '{}'
     }
 
-    def __init__(self, name, type, value = None):
-        self.name = name
-        self.type = type
+    def __init__(self, name, type, modifiable, value = None):
+        self.name       = name
+        self.type       = type
+        self.modifiable = modifiable
         # Colocamos el valor por defecto
         if value == None:
             self.value = symbol_default[type]
@@ -42,6 +43,7 @@ class Simbolo(object):
         string  = "Variable: " + self.name
         string += " | Type: "   + self.type
         string += " | Value: " + str(self.value)
+        string += " | Modifiable: " + str(self.modifiable)
         printValueIdented(string, level)
 
 # Clase Tabla de Simbolos, provee lo necesario para construir una 
@@ -96,16 +98,19 @@ class tablaSimbolos(object):
     # Busca una variable de manera global declarada en la tabla 
     # de simbolos.
     def buscar(self, variable):
-        if variable in self.symbols:
-            return self.symbols[variable]
+        if self.symbols:
+            if variable in self.symbols:
+                return self.symbols[variable]
+            else:
+                if self.parent:
+                    return self.parent.buscar(variable)
         else:
-            if self.parent:
-                return self.parent.buscar(variable)
+            print "Variable " + str(variable) + " no esta definida."
 
     #Inserta un simbolo en la tabla de simbolos local
-    def insert(self, variable, dataType):
+    def insert(self, variable, dataType, modifiable = True):
         if not self.contains(variable):
-            self.symbols[variable] = Simbolo(variable, dataType)
+            self.symbols[variable] = Simbolo(variable, dataType, modifiable)
         else:
             string = "Variable '" + str(variable) + "' ya esta definida."
             print(string)
