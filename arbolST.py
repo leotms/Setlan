@@ -81,7 +81,7 @@ class Assign(Expression):
 ################################################################################
         if LeftIdentType:
             self.alcance.printTable(5)
-            identifier = self.alcance.buscar(self.leftIdent)
+            identifier = self.alcance.buscar(self.leftIdent.identifier)
             if not identifier.modifiable:
                 mensaje = "ERROR: No se puede modificar " + self.leftIdent
                 type_error_list.append(mensaje)

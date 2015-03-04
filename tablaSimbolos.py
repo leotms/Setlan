@@ -98,12 +98,15 @@ class tablaSimbolos(object):
     # Busca una variable de manera global declarada en la tabla 
     # de simbolos.
     def buscar(self, variable):
+        #Si tiene simbolos buscamos primero alli
         if self.symbols:
             if variable in self.symbols:
                 return self.symbols[variable]
             else:
                 if self.parent:
                     return self.parent.buscar(variable)
+        elif self.parent:
+            return self.parent.buscar(variable)
         else:
             print "Variable " + str(variable) + " no esta definida."
 
