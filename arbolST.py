@@ -518,10 +518,11 @@ class BinaryOperator(Expression):
             ('int', 'CONTAINMENT', 'set'): 'bool'
         }
  
-    def __init__(self, lefExp, operator, rightExp):
+    def __init__(self, lefExp, operator, rightExp, location):
         self.lefExp   = lefExp
         self.operator = Operator(operator)
         self.rightExp = rightExp
+        self.location = location
         self.alcance  = tablaSimbolos()
  
     def printTree(self, level):
@@ -544,7 +545,8 @@ class BinaryOperator(Expression):
         else:
             mensaje = "ERROR: No se puede aplicar '" + operatorName\
                       + "' en operandos de tipo '" + lefExpType\
-                      + "' y '" + rightExpType + "'."
+                      + "' y '" + rightExpType + "'."\
+                      + locationToString(self.location)
             type_error_list.append(mensaje)
             return False
 

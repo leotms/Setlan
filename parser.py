@@ -220,7 +220,7 @@ def p_binary_operator_math(symbol):
                  | expresion TIMES expresion
                  | expresion DIVIDE expresion
                  | expresion MODULE expresion"""
-    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3])
+    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3], localize(symbol,2))
  
 # Operadores binarios para la comparacion
 def p_binary_operator_compare(symbol):
@@ -230,7 +230,7 @@ def p_binary_operator_compare(symbol):
                  | expresion GREATEQ expresion
                  | expresion EQUAL expresion
                  | expresion UNEQUAL expresion"""   
-    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3])
+    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3], localize(symbol,2))
  
 # Operadores binarios sobre conjuntos
 def p_binary_operator_sets(symbol):
@@ -243,13 +243,13 @@ def p_binary_operator_sets(symbol):
                  | expresion TIMESMAP expresion
                  | expresion DIVIDEMAP expresion
                  | expresion MODULEMAP expresion"""   
-    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3])
+    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3], localize(symbol,2))
 
 # Operadores binarios logicos
 def p_binary_operator_logical(symbol):
     """expresion : expresion AND expresion
                  | expresion OR expresion"""
-    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3])
+    symbol[0] = BinaryOperator(symbol[1],symbol[2],symbol[3], localize(symbol,2))
     
 ################################################################################
 #						     OPERADORES UNARIOS 			                   #
@@ -258,19 +258,19 @@ def p_binary_operator_logical(symbol):
 #Operador unario numero negativo
 def p_expresion_unary_minus(symbol):
     "expresion : MINUS expresion %prec UNARY_MINUS"
-    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol))
+    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol,1))
 
 # Operador unario de negacion logica
 def p_expresion_not(symbol): 
     "expresion : NOT expresion"
-    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol))
+    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol,1))
 
 def p_expresion_unary_set(symbol):
     """expresion : MAXVALUE expresion
                  | MINVALUE expresion
                  | NUMELEMENTS expresion"""
 
-    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol))
+    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol,1))
 
 ################################################################################
 #                        PRECEDENCIA DE OPERADORES                             #
@@ -315,19 +315,19 @@ precedence = (
 ################################################################################
 
 # Retorna una tupla (fila, columna) con la ubicacion del simbolo
-def localize(symbol):
+def localize(symbol,narg):
 
     #Localizamos la linea
-    line   = symbol.lineno(1)
+    line   = symbol.lineno(narg)
 
     #Calculamos la columna
     code = symbol.lexer.lexdata
-    last_cr = code.rfind('\n',0,symbol.lexpos(1))
+    last_cr = code.rfind('\n',0,symbol.lexpos(narg))
     if last_cr < 0:
         last_cr = 0
     
-    column = (symbol.lexpos(1) - last_cr)
-    
+    column = (symbol.lexpos(narg) - last_cr)
+
     return line, column
 
 ################################################################################
