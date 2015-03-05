@@ -1,4 +1,3 @@
-
 program {
     using
         int x;              # incializado en 0
@@ -9,7 +8,7 @@ program {
     x = 42;
     y = {1,2,42};
 
-    x = -x;
+    x = -z;
     x = >? y; #Deberia retornar el maximo.
     x = <? y; #Deberia retornar el minimo.
     x = $? y; #Deberia retornar el numero de elementos.

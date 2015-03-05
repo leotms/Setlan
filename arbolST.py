@@ -10,20 +10,25 @@ Ult. Modificacion el 09/02/2015
 '''
 
 
-#Importamos
+# Importaciones necesarias
 from tablaSimbolos import *
 from   lexer       import find_column
 
-#Errores
+# Errores de Tipo
 type_error_list = []
 
-#Empila una nueva tabla de simbolos
+# Empila una nueva tabla de simbolos
 def empilar(objeto, alcance):
     if isinstance(objeto, Block):
         objeto.alcance.parent = alcance
         alcance.children.append(objeto.alcance)
     else:
         objeto.alcance = alcance
+
+# Devuelve una tupla (linea, columna) en un string imprimible
+def locationToString(location):
+    string = '(Línea {0}, Columna {1}).'.format(location[0], location[1])
+    return string
 
 # Clase Expression.
 class Expression:
@@ -99,13 +104,13 @@ class Print(Expression):
 
     def symbolcheck(self):
         
-        accepted_types = ['string','int','bool','set']
+        acceptedTypes = ['string','int','bool','set']
         for element in self.elements:
             empilar(element, self.alcance)
             elemtype = element.symbolcheck()
     
             #Verificamos que se impriman expresiones de tipos permitidos
-            if not elemtype in accepted_types:
+            if not elemtype in acceptedTypes:
                 mensaje =  "ERROR: No se puede imprimir '"\
                            + elemtype + "'."
                 type_error_list.append(mensaje)
@@ -122,12 +127,12 @@ class Scan(Expression):
         self.value.printTree(level + 1)
 
     def symbolcheck(self):
-        accepted_types = ['int','bool']
+        acceptedTypes = ['int','bool']
         empilar(self.value, self.alcance)
         valueType = self.value.symbolcheck()
 
         #Verificamos que se admita el tipo permitido
-        if not valueType in accepted_types:
+        if not valueType in acceptedTypes:
             mensaje = "ERROR: scan no admite valores de tipo '"\
                       + valueType + "'."   
             type_error_list.append(mensaje) 
@@ -185,6 +190,7 @@ class Using(Expression):
             empilar(declaration, self.alcance)
             declaration.symbolcheck()
 
+#Clase para los elementos de una declaracion.
 class Declaration(Expression):
  
     def __init__(self, decType, list_id):
@@ -554,10 +560,11 @@ class UnaryOperator(Expression):
         ('NOT', 'bool') : 'bool'
     }
     
-    def __init__(self,operator,expresion):
+    def __init__(self,operator,expresion, location):
         self.operator  = Operator(operator)
         self.expresion = expresion
-        self.alcance  = tablaSimbolos()
+        self.location  = location
+        self.alcance   = tablaSimbolos()
 
     def printTree(self,level):
         self.operator.printTree(level)
@@ -566,6 +573,7 @@ class UnaryOperator(Expression):
     def symbolcheck(self):
         empilar(self.expresion, self.alcance)
 
+        #Verificamos los tipos de los operandos.
         operatorName  = self.operator.symbolcheck()
         expresionType = self.expresion.symbolcheck()
 
@@ -574,7 +582,8 @@ class UnaryOperator(Expression):
             return unaryOperatorTypeTuples[newTuple]
         else:
             mensaje = "ERROR: No se puede aplicar '" + operatorName\
-                      + "' en operando de tipo '" + expresionType + "'."
+                      + "' en operando de tipo '" + expresionType + "' "\
+                      + locationToString(self.location)
             type_error_list.append(mensaje)
             return False        
 

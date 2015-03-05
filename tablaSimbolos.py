@@ -55,8 +55,6 @@ class tablaSimbolos(object):
         self.symbols  = {}
         self.parent   = None
         self.children = []
-        # Comentado en caso de ser utilizado mas adelante.
-        # self.errors  = []
 
     # Imprime los simbolos de la tabla actual y de sus sucesoras.
     def printTable(self, level):

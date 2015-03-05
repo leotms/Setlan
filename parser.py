@@ -258,19 +258,19 @@ def p_binary_operator_logical(symbol):
 #Operador unario numero negativo
 def p_expresion_unary_minus(symbol):
     "expresion : MINUS expresion %prec UNARY_MINUS"
-    symbol[0] = UnaryOperator(symbol[1],symbol[2])
+    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol))
 
 # Operador unario de negacion logica
 def p_expresion_not(symbol): 
     "expresion : NOT expresion"
-    symbol[0] = UnaryOperator(symbol[1],symbol[2])
+    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol))
 
 def p_expresion_unary_set(symbol):
     """expresion : MAXVALUE expresion
                  | MINVALUE expresion
                  | NUMELEMENTS expresion"""
 
-    symbol[0] = UnaryOperator(symbol[1],symbol[2])
+    symbol[0] = UnaryOperator(symbol[1],symbol[2], localize(symbol))
 
 ################################################################################
 #                        PRECEDENCIA DE OPERADORES                             #
@@ -311,6 +311,26 @@ precedence = (
 )
  
 ################################################################################
+#                           POSICION DE LA EXPRESION                           #
+################################################################################
+
+# Retorna una tupla (fila, columna) con la ubicacion del simbolo
+def localize(symbol):
+
+    #Localizamos la linea
+    line   = symbol.lineno(1)
+
+    #Calculamos la columna
+    code = symbol.lexer.lexdata
+    last_cr = code.rfind('\n',0,symbol.lexpos(1))
+    if last_cr < 0:
+        last_cr = 0
+    
+    column = (symbol.lexpos(1) - last_cr)
+    
+    return line, column
+
+################################################################################
 #                              MANEJO DE ERRORES                               #
 ################################################################################
  
@@ -324,7 +344,6 @@ def p_error(symbol):
         parser_errorList.append(errorString)
     else:
         parser_errorList.append('Error: error de sintaxis al final del archivo.')
-
 
 #Lista de Errores del Parser
 parser_errorList = []
