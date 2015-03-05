@@ -40,7 +40,8 @@ def p_vacio(symbol):
 def p_instruccion_assign(symbol):
     "instruccion : IDENTIFIER ASSIGN expresion"
     if symbol[2] == '=':
-        symbol[0] = Assign(Identifier(symbol[1]),symbol[3])
+        symbol[0] = Assign(Identifier(symbol[1],localize(symbol,1)),
+                           symbol[3],localize(symbol,2))
  
 # Regla para las impresiones en pantalla
 def p_instruccion_print(symbol):
@@ -48,14 +49,14 @@ def p_instruccion_print(symbol):
                    | PRINTLN lista_expresiones"""
  
     if symbol[1].upper() == "PRINTLN":
-        symbol[0] = Print(symbol[1].upper(), symbol[2] + [String("\\n")])
+        symbol[0] = Print(symbol[1].upper(), symbol[2] + [String("\\n")], localize(symbol,1))
     else:
-        symbol[0] = Print(symbol[1].upper(), symbol[2])
+        symbol[0] = Print(symbol[1].upper(), symbol[2], localize(symbol,1))
 
 # Regla para leer una variable
 def p_instruccion_scan(symbol):
     "instruccion : SCAN IDENTIFIER"
-    symbol[0] = Scan(Identifier(symbol[2]))
+    symbol[0] = Scan(Identifier(symbol[2]),localize(symbol,1))
 
 ################################################################################
 #						    INSTRUCCION DE BLOQUE  					           #
@@ -125,9 +126,9 @@ def p_instruccion_if(symbol):
     """instruccion : IF LPARENTHESIS expresion RPARENTHESIS instruccion ELSE instruccion 
                    | IF LPARENTHESIS expresion RPARENTHESIS instruccion"""
     if len(symbol) == 8:
-        symbol[0] = If(symbol[3],symbol[5],symbol[7])
+        symbol[0] = If(symbol[3],symbol[5],localize(symbol,2),symbol[7])
     else:
-        symbol[0] = If(symbol[3],symbol[5])
+        symbol[0] = If(symbol[3],symbol[5],localize(symbol,2))
 
 ###############################################################################
 #					           INSTRUCCION FOR             					  #
@@ -135,7 +136,7 @@ def p_instruccion_if(symbol):
 
 def p_instruccion_for(symbol):
     "instruccion : FOR IDENTIFIER direccion expresion DO instruccion"
-    symbol[0] = For(Identifier(symbol[2]),symbol[3],symbol[4],symbol[6])
+    symbol[0] = For(Identifier(symbol[2]),symbol[3],symbol[4],symbol[6],localize(symbol,1))
 
 def p_expresion_direccion(symbol):
     """direccion : MIN
@@ -148,15 +149,15 @@ def p_expresion_direccion(symbol):
 
 def p_instruccion_repeat_while_do(symbol):
     "instruccion : REPEAT instruccion WHILE LPARENTHESIS expresion RPARENTHESIS DO instruccion"
-    symbol[0] = RepeatWhileDo(symbol[2],symbol[5],symbol[8])
+    symbol[0] = RepeatWhileDo(symbol[2],symbol[5],symbol[8], localize(symbol,4))
 
 def p_instruccion_while_do(symbol):
     "instruccion : WHILE LPARENTHESIS expresion RPARENTHESIS DO instruccion"
-    symbol[0] = WhileDo(symbol[3],symbol[6])
+    symbol[0] = WhileDo(symbol[3],symbol[6], localize(symbol,2))
 
 def p_instruccion_repeat_while(symbol):
     "instruccion : REPEAT instruccion WHILE LPARENTHESIS expresion RPARENTHESIS"
-    symbol[0] = RepeatWhile(symbol[2],symbol[5])
+    symbol[0] = RepeatWhile(symbol[2],symbol[5], localize(symbol,4))
 
 ###############################################################################
 #							     EXPRESIONES			   					  #
@@ -181,7 +182,7 @@ def p_expresion_bool(symbol):
 # IDENTIFIER es una expresion variable.
 def p_expresion_identifier(symbol):
  	"expresion : IDENTIFIER"
- 	symbol[0] = Identifier(symbol[1])
+ 	symbol[0] = Identifier(symbol[1],localize(symbol,1))
 
 # Una expresion entre parentesis es una expresion valida.
 def p_expression_parentesis(symbol):
@@ -196,7 +197,7 @@ def p_expression_parentesis(symbol):
 def p_expresion_set(symbol):
     """expresion : OPENCURLY vacio CLOSECURLY 
                  | OPENCURLY lista_expresiones CLOSECURLY"""
-    symbol[0] = Set(symbol[2])
+    symbol[0] = Set(symbol[2], localize(symbol,1))
 
 ################################################################################
 #							   TIPOS DE DATO   						           #

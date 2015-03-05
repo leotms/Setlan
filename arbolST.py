@@ -54,10 +54,11 @@ class Program(Expression):
 #Clase para la asignacion de expresiones
 class Assign(Expression):
 
-    def __init__(self, leftIdent, rightExp):
+    def __init__(self, leftIdent, rightExp, location):
         self.type      = "ASSIGN"
         self.leftIdent = leftIdent
         self.rightExp  = rightExp
+        self.location  = location
 
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -81,21 +82,24 @@ class Assign(Expression):
             if LeftIdentType != RightExpType: 
                 mensaje  = "ERROR: No se puede asignar '" + RightExpType \
                            + "' a Variable '" + str(self.leftIdent) + "' de tipo '"\
-                           + str(LeftIdentType) + "'"
+                           + str(LeftIdentType) + "' "\
+                           + locationToString(self.location)
                 type_error_list.append(mensaje)
 
         if LeftIdentType:
             identifier = self.alcance.buscar(self.leftIdent.identifier)
             if not identifier.modifiable:
-                mensaje = "ERROR: No se puede modificar " + self.leftIdent
+                mensaje = "ERROR: No se puede modificar " + self.leftIdent\
+                          + locationToString(self.location)
                 type_error_list.append(mensaje)
 
 # Clase para la impresion por consola
 class Print(Expression):
  
-    def __init__(self, printType, elements):
+    def __init__(self, printType, elements, location):
         self.type     = printType
         self.elements = elements
+        self.location = location
  
     def printTree(self, level):
         printValueIdented(self.type,level)
@@ -112,15 +116,17 @@ class Print(Expression):
             #Verificamos que se impriman expresiones de tipos permitidos
             if not elemtype in acceptedTypes:
                 mensaje =  "ERROR: No se puede imprimir '"\
-                           + elemtype + "'."
+                           + elemtype + "' "\
+                           + locationToString(self.location)
                 type_error_list.append(mensaje)
 
 # Clase para la entrada de datos
 class Scan(Expression):
     
-    def __init__(self, identifier):
+    def __init__(self, identifier, location):
         self.type  = 'SCAN'
         self.value = identifier
+        self.location =  location
 
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -134,7 +140,8 @@ class Scan(Expression):
         #Verificamos que se admita el tipo permitido
         if not valueType in acceptedTypes:
             mensaje = "ERROR: scan no admite valores de tipo '"\
-                      + valueType + "'."   
+                      + valueType + "' "\
+                      + locationToString(self.location)   
             type_error_list.append(mensaje) 
 
 #Un bloque es una secuencia de Expresiones
@@ -210,10 +217,11 @@ class Declaration(Expression):
 #Clase para los condicionales
 class If(Expression):   
     
-    def __init__(self,condition,inst_if,inst_else = None):
+    def __init__(self,condition,inst_if,location, inst_else = None):
         self.type      = 'IF'
         self.condition = condition
         self.inst_if   = inst_if
+        self.location  = location
         self.inst_else = inst_else 
 
     def printTree(self,level):
@@ -238,17 +246,19 @@ class If(Expression):
             inst_else_Type = self.inst_else.symbolcheck()
 
         if conditionType != 'bool':
-            mensaje = "ERROR: La condicion del if no es booleana"
+            mensaje  = "ERROR: La condicion del IF debe ser tipo 'bool'"
+            mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
 
 class For(Expression):
     
-    def __init__(self,identifier,direction,expre,inst):
+    def __init__(self,identifier,direction,expre,inst, location):
         self.type       = 'FOR'
         self.identifier = identifier
         self.direction  = direction
         self.expre      = expre
         self.inst       = inst
+        self.location   = location
 
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -274,7 +284,8 @@ class For(Expression):
 
         if expreType != 'set':
             mensaje = "ERROR: La expresion " + self.expre\
-                      + " debe ser de tipo 'set'."   
+                      + " debe ser de tipo 'set' "\
+                      + locationToString(self.location)   
             type_error_list.append(mensaje) 
 
 class Direction(Expression):
@@ -289,11 +300,12 @@ class Direction(Expression):
 
 class RepeatWhileDo(Expression):
     
-    def __init__(self,inst1,expre,inst2):
+    def __init__(self,inst1,expre,inst2,location):
         self.type  = 'REPEAT'
         self.inst1 = inst1
         self.expre = expre
         self.inst2 = inst2
+        self.location = location
 
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -313,16 +325,18 @@ class RepeatWhileDo(Expression):
         expreType = self.expre.symbolcheck()
         #Verificamos que la condicion sea booleana
         if expreType != 'bool':
-            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            mensaje = "ERROR: La condicion del while debe ser de tipo 'bool'."
+            mensaje += locationToString(self.location)            
             type_error_list.append(mensaje)        
 
 #Clase para los ciclos while condicion do
 class WhileDo(Expression):
     
-    def __init__(self,expre,inst):
+    def __init__(self,expre,inst, location):
         self.type  = 'WHILE'
         self.expre = expre
         self.inst  = inst
+        self.location = location
     
     def printTree(self, level):
         printValueIdented(self.type,level)
@@ -340,16 +354,18 @@ class WhileDo(Expression):
         expreType = self.expre.symbolcheck()
         #Verificamos que la condicion sea booleana
         if expreType != 'bool':
-            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
+            mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
             
 #Clase para los ciclos repeat instruccion while condicion do
 class RepeatWhile(Expression):
     
-    def __init__(self,inst,expre):
+    def __init__(self,inst,expre, location):
         self.type  = 'REPEAT'
         self.inst  = inst
         self.expre = expre
+        self.location = location 
         
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -365,7 +381,8 @@ class RepeatWhile(Expression):
         expreType = self.expre.symbolcheck()
         #Verificamos que la condicion sea booleana
         if expreType != 'bool':
-            mensaje = "La condicion del while debe ser de tipo 'bool'."
+            mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
+            mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
 
 class Number(Expression):
@@ -398,9 +415,10 @@ class String(Expression):
 # Clase para definir un identificador o variable.
 class Identifier(Expression):
 
-    def __init__(self, identifier):
+    def __init__(self, identifier, location):
         self.type       = "VARIABLE"
         self.identifier = identifier
+        self.location   = location
         self.alcance    = tablaSimbolos()
 
     def __str__(self):
@@ -417,9 +435,10 @@ class Identifier(Expression):
             return identifier.type
         else:
             mensaje =   "ERROR: Variable '" + str(self.identifier)\
-                      + "' es asignada antes de ser declarada." 
-            type_error_list.append(mensaje)
-
+                      + "' es asignada antes de ser declarada " \
+                      + locationToString(self.location)
+            if not mensaje in type_error_list: 
+                type_error_list.append(mensaje)
             return str(self.identifier)
 
 # Clase para definir una expresion booleana.
@@ -454,9 +473,10 @@ class Parenthesis(Expression):
 # Clase para definir un Conjunto.
 class Set(Expression):
  
-    def __init__(self,list_expr):
+    def __init__(self,list_expr, location):
         self.type = 'SET'
         self.list_expr = list_expr
+        self.location  = location
  
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -470,8 +490,9 @@ class Set(Expression):
             type_set = 'int'
             for exp in self.list_expr:
                 if type_set != exp.symbolcheck():
-                    mensaje = "SET esperaba un numero entero pero se encontro Variable '" \
-                             + exp.symbolcheck() + "'."
+                    mensaje = "ERROR: 'set' esperaba un numero entero pero se encontro Variable '" \
+                             + exp.symbolcheck() + "' "\
+                             + locationToString(self.location)
                     type_error_list.append(mensaje)
                     return exp.symbolcheck()
             return 'set'

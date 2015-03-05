@@ -15,5 +15,8 @@ program {
     x = $? y; #Deberia retornar el numero de elementos.
     z = 42 @ y; #Deberia retornar true.
     z = not z; # Negacion :O
+    y = {};
+    y = {holis,1};
+    y = {1,2,3}
 
 }
