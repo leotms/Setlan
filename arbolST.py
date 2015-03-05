@@ -532,13 +532,11 @@ class BinaryOperator(Expression):
         rightExpType   = self.rightExp.symbolcheck()
         operatorName   = self.operator.symbolcheck()
 
-        print lefExpType, operatorName ,rightExpType
-
         newTuple = (lefExpType, operatorName, rightExpType)
         if newTuple in binaryOperatorTypeTuples:
             return binaryOperatorTypeTuples[newTuple]
         else:
-            mensaje = "ERROR: No se puede aplicar '" + self.operator.name\
+            mensaje = "ERROR: No se puede aplicar '" + operatorName\
                       + "' en operandos de tipo '" + lefExpType\
                       + "' y '" + rightExpType + "'."
             type_error_list.append(mensaje)
@@ -546,14 +544,39 @@ class BinaryOperator(Expression):
 
 #Clase para los Oeradores Unarios
 class UnaryOperator(Expression):
+
+    global unaryOperatorTypeTuples
+    unaryOperatorTypeTuples = {
+        ('MINUS','int') : 'int',
+        ('MAXVALUE','set') : 'int',
+        ('MINVALUE','set') : 'int',
+        ('NUMELEMENTS','set'): 'int',
+        ('NOT', 'bool') : 'bool'
+    }
     
     def __init__(self,operator,expresion):
         self.operator  = Operator(operator)
         self.expresion = expresion
+        self.alcance  = tablaSimbolos()
 
     def printTree(self,level):
         self.operator.printTree(level)
         self.expresion.printTree(level + 1)
+
+    def symbolcheck(self):
+        empilar(self.expresion, self.alcance)
+
+        operatorName  = self.operator.symbolcheck()
+        expresionType = self.expresion.symbolcheck()
+
+        newTuple = (operatorName, expresionType)
+        if newTuple in unaryOperatorTypeTuples:
+            return unaryOperatorTypeTuples[newTuple]
+        else:
+            mensaje = "ERROR: No se puede aplicar '" + operatorName\
+                      + "' en operando de tipo '" + expresionType + "'."
+            type_error_list.append(mensaje)
+            return False        
 
 # Classe para los operadores:
 class Operator(Expression):

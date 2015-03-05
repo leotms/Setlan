@@ -1,0 +1,19 @@
+
+program {
+    using
+        int x;              # incializado en 0
+        set y;              # incializado en {}
+        bool z;             # inicalizado en false
+    in
+
+    x = 42;
+    y = {1,2,42};
+
+    x = -x;
+    x = >? y; #Deberia retornar el maximo.
+    x = <? y; #Deberia retornar el minimo.
+    x = $? y; #Deberia retornar el numero de elementos.
+    z = 42 @ y; #Deberia retornar true.
+    z = not z; # Negacion :O
+
+}
