@@ -407,8 +407,9 @@ class RepeatWhile(Expression):
         if expreType != 'bool':
             mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)
-            type_error_list.append(mensaje) 
-
+            type_error_list.append(mensaje)
+ 
+#Clase para los numeros enteros
 class Number(Expression):
     
     def __init__(self, number):
@@ -477,7 +478,7 @@ class Identifier(Expression):
             return str(self.identifier)
 
     def evaluate(self):
-        return self.alcance.buscar(self.identifier).value
+        return self.identifier
 
 # Clase para definir una expresion booleana.
 class Bool(Expression):
