@@ -1,0 +1,9 @@
+program {
+	using
+		set b;
+	in
+
+	b = {1,2,3};
+	println "hola, este es un arreglo: ", b;
+	print "Hello, baby :D"
+}

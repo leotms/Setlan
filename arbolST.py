@@ -134,7 +134,9 @@ class Print(Expression):
 
     def evaluate(self):
         for element in self.elements:
-            print element.evaluate()
+            print(element.evaluate()),
+        if self.type == "PRINTLN":
+            print
 
 # Clase para la entrada de datos
 class Scan(Expression):
@@ -440,7 +442,7 @@ class String(Expression):
         textOnly = self.string[1:]
         textOnly = textOnly[:-1]
         return textOnly
-        
+
     def printTree(self, level):
         printValueIdented(self.type, level)
         printValueIdented(self.string, level + 1)
