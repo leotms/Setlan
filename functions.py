@@ -5,11 +5,14 @@
 Creado el 07/03/2015
 Ult. Modificacion el 07/03/2015
 
+Este archivo define las funciones necesarias para la ejecucion del 
+lenguaje Setlan.
+
 @author:  Aldrix Marfil     10-10940
 @author:  Leonardo Martinez 11-10576
 '''
 
-# Archivo que define las funciones para la evaluacion de setlan
+# OPERACIONES BINARIAS
 
 # Suma para dos enteros
 def suma(x,y):
@@ -62,3 +65,33 @@ def igual(x,y):
 # Desigualdad para enteros, conjuntos y booleanos
 def desigual(x,y):
 	return x != y
+
+# OPERACIONES PARA BINARIOS SOBRE CONJUNTOS
+def setAListaDeEnteros(s):
+	lista = []
+	# Eliminamos las llaves del set
+	sinLlaves = s[1:]
+	sinLlaves = s[:-1]
+
+	while s != "":
+		char = s[0]
+		num  = ""
+		while char != ",":
+			num += char
+		lista.append(int(num))
+		s = s[len(num):] 
+
+	return lista
+
+def listaDeEnterosASet(l):
+    setString = "{"
+    for item in l:
+        setString += str(item) + ","
+    setString = setString[:-1]
+    setString += "}"
+    return setString
+
+# Retorna si un entero pertenece a un set determinado
+def contiene(x,set):
+	lista = setAListaDeEnteros(set)
+	return x in lista

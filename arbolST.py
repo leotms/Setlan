@@ -530,12 +530,7 @@ class Set(Expression):
  
     # Para poder ser imprimido por la instruccion print
     def __str__(self):
-        setString = "{"
-        for item in self.list_expr:
-            setString += str(item) + ","
-        setString = setString[:-1]
-        setString += "}"
-        return setString
+        return listaDeEnterosASet(self.list_expr)
 
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -617,7 +612,9 @@ class BinaryOperator(Expression):
         'EQUAL'  : igual,
         # Logicos
         'AND'   : logicAnd,
-        'OR'    : logicOr
+        'OR'    : logicOr,
+        # Sobre Conjuntos
+        'CONTAINMENT' : contiene
     }
  
     def __init__(self, leftExp, operator, rightExp, location):
