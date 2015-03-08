@@ -305,12 +305,19 @@ class For(Expression):
         
         empilar(self.expre, self.alcance)
         empilar(self.identifier, self.alcance)
-        #empilar(self.inst, alcanceFor)
         self.inst.alcance = self.alcance
 
         self.identifier.symbolcheck()
+        #Tipo de la expresion del for
         expreType = self.expre.symbolcheck()
+        #Tipo de la direccion
+        dirType   = self.direction.symbolcheck()
 
+        if dirType != 'min' and dirType != 'max':
+            mensaje = "ERROR: La direccion del for"\
+                      + " debe ser 'max' o 'min' "\
+                      + locationToString(self.location)   
+            type_error_list.append(mensaje)
         if expreType != 'set':
             mensaje = "ERROR: La expresion del for"\
                       + " debe ser de tipo 'set' "\
@@ -318,6 +325,28 @@ class For(Expression):
             type_error_list.append(mensaje)
 
         self.inst.symbolcheck() 
+
+    def evaluate(self):
+        
+        #Obtenemos los elementos del conjunto a iterar
+        expreSet = str(self.alcance.buscar(str(self.expre)).value)
+        elements = expreSet[1:-1].split(',')
+        elements = map(int,elements)
+
+        #Verificamos el orden del recorrido del conjunto
+        if self.direction.evaluate() == 'min':   #Recorrido ascendente
+            while elements != []:
+                ubication = elements.index(min(elements)) 
+                value     = elements.pop(ubication)
+                self.alcance.update(str(self.identifier),value)
+                self.inst.evaluate()
+        elif self.direction.evaluate() == 'max': #Recorrido descendente
+            while elements != []:
+                ubication = elements.index(max(elements)) 
+                value     = elements.pop(ubication)
+                self.alcance.children[0].update(self.identifier,value)  
+        #Evaluamos las instrucciones
+          
 
 class Direction(Expression):
     
@@ -328,6 +357,12 @@ class Direction(Expression):
     def printTree(self,level):
         printValueIdented(self.type, level)
         printValueIdented(self.value,level + 1)
+
+    def symbolcheck(self):
+        return self.value
+
+    def evaluate(self):
+        return self.value
 
 class RepeatWhileDo(Expression):
     

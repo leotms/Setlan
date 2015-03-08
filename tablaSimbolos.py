@@ -144,6 +144,8 @@ class tablaSimbolos(object):
                 #     return False
             else:
                 return self.parent.update(variable, value, dataType)
+        elif self.parent:
+            return self.parent.update(variable, value, dataType)
         else:
             print "SymTable.update: No " + str(variable) + " in symbols"
             return False
