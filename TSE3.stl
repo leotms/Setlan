@@ -12,5 +12,6 @@ program {
 
     #Es mas, ahora podemos hacer:
     a = i + j;
+    print a;
 
 }

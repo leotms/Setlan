@@ -112,6 +112,7 @@ class Print(Expression):
         self.type     = printType
         self.elements = elements
         self.location = location
+        self.alcance  = tablaSimbolos()
  
     def printTree(self, level):
         printValueIdented(self.type,level)
@@ -119,7 +120,6 @@ class Print(Expression):
             element.printTree(level + 1)
 
     def symbolcheck(self):
-        
         acceptedTypes = ['string','int','bool','set']
         for element in self.elements:
             empilar(element, self.alcance)
@@ -185,7 +185,6 @@ class Block(Expression):
         printValueIdented("BLOCK_END", level)
 
     def symbolcheck(self):
-        
         if self.declaraciones:
             empilar(self.declaraciones, self.alcance)
             self.declaraciones.symbolcheck()
@@ -300,19 +299,25 @@ class For(Expression):
         #Creamos la tabla para el alcance local del for        
         alcanceFor = tablaSimbolos()
         alcanceFor.parent = self.alcance
-        alcanceFor.insert(self.identifier, 'int', False)
+        alcanceFor.insert(str(self.identifier), 'int', False)
         self.alcance.children.append(alcanceFor)
+        self.alcance = alcanceFor
         
         empilar(self.expre, self.alcance)
-        empilar(self.inst, alcanceFor)
+        empilar(self.identifier, self.alcance)
+        #empilar(self.inst, alcanceFor)
+        self.inst.alcance = self.alcance
 
+        self.identifier.symbolcheck()
         expreType = self.expre.symbolcheck()
 
         if expreType != 'set':
-            mensaje = "ERROR: La expresion " + self.expre\
+            mensaje = "ERROR: La expresion del for"\
                       + " debe ser de tipo 'set' "\
                       + locationToString(self.location)   
-            type_error_list.append(mensaje) 
+            type_error_list.append(mensaje)
+
+        self.inst.symbolcheck() 
 
 class Direction(Expression):
     
@@ -471,7 +476,7 @@ class Identifier(Expression):
 
     def symbolcheck(self): 
 
-        if self.alcance.globalContains(self.identifier):
+        if self.alcance.globalContains(str(self.identifier)):
             identifier = self.alcance.buscar(self.identifier)
             return identifier.type
         else:
