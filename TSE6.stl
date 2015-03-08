@@ -1,0 +1,9 @@
+program {
+	using
+		int  a,b;
+        bool s;
+	in
+    scan a;
+	a = a + 2;
+    s = b == a;
+}
