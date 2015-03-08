@@ -100,7 +100,7 @@ class Assign(Expression):
 
     def evaluate(self):
         #Evaluamos las expresiones
-        Identifier = self.leftIdent.evaluate()
+        Identifier = str(self.leftIdent)
         result     = self.rightExp.evaluate()
         #Actualizamos 
         self.alcance.update(Identifier,result)
@@ -134,7 +134,9 @@ class Print(Expression):
 
     def evaluate(self):
         for element in self.elements:
-            print element
+            print(element.evaluate()),
+        if self.type == "PRINTLN":
+            print
 
 # Clase para la entrada de datos
 class Scan(Expression):
@@ -437,9 +439,10 @@ class String(Expression):
         self.type   = "STRING"
         self.string = string
 
-    # Para poder ser imprimido por la instruccion print
     def __str__(self):
-        return self.string
+        textOnly = self.string[1:]
+        textOnly = textOnly[:-1]
+        return textOnly
 
     def printTree(self, level):
         printValueIdented(self.type, level)
@@ -447,6 +450,9 @@ class String(Expression):
 
     def symbolcheck(self):
         return 'string'
+
+    def evaluate(self):
+        return str(self)
 
 # Clase para definir un identificador o variable.
 class Identifier(Expression):
@@ -487,7 +493,6 @@ class Bool(Expression):
         self.type  = 'bool'
         self.value = value
 
-    # Para poder ser imprimido por la instruccion print
     def __str__(self):
         return str(self.value)
 
@@ -497,6 +502,9 @@ class Bool(Expression):
 
     def symbolcheck(self):
         return 'bool'
+
+    def evaluate(self):
+        return str(self.value)
 
 class Parenthesis(Expression):
     
@@ -525,8 +533,10 @@ class Set(Expression):
     def __str__(self):
         setString = "{"
         for item in self.list_expr:
-            setString += item
+            setString += str(item) + ","
+        setString = setString[:-1]
         setString += "}"
+        return setString
 
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -546,6 +556,9 @@ class Set(Expression):
                     type_error_list.append(mensaje)
                     return exp.symbolcheck()
             return 'set'
+
+    def evaluate(self):
+        return self
 
 # Clase para definir los tipos.
 class Type(Expression):
@@ -635,7 +648,7 @@ class BinaryOperator(Expression):
         leftOp         = self.leftExp.evaluate()
 
         # Aplicamos la operacion indicada y tomamos el resultado.
-        result = evalFunctions[operatorName](rigtOp, leftOp)
+        result = evalFunctions[operatorName](leftOp, rigtOp)
         return result
 
 #Clase para los Oeradores Unarios

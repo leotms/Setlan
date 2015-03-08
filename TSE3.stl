@@ -1,11 +1,16 @@
 program {
     using
         int i,j,k;
+        int a;
         bool b,c;
         set s;
     in
     
     i = 8;
     j = 12;
-    k = 12/8;   
+    k = 12/8; 
+
+    #Es mas, ahora podemos hacer:
+    a = i + j;
+
 }
