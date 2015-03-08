@@ -142,9 +142,9 @@ class Print(Expression):
 class Scan(Expression):
     
     def __init__(self, identifier, location):
-        self.type  = 'SCAN'
-        self.value = identifier
-        self.location =  location
+        self.type     = 'SCAN'
+        self.value    = identifier
+        self.location = location
 
     def printTree(self,level):
         printValueIdented(self.type,level)
@@ -161,6 +161,20 @@ class Scan(Expression):
                       + valueType + "' "\
                       + locationToString(self.location)   
             type_error_list.append(mensaje) 
+
+    def evaluate(self):
+        #Buscamos la variable donde se almacenara el valor de entrada
+        simbol  = self.alcance.buscar(self.value.identifier)
+        if simbol:
+            #Verificamos la accion a realizar segun el tipo
+            if simbol.type == 'int':
+                entrada = input()            
+                if isinstance(entrada, int) and simbol.modifiable == True:
+                    self.alcance.update(self.value.identifier,entrada)
+            elif simbol.type == 'bool':
+                entrada = raw_input()
+                if entrada in ['false','true'] and simbol.modifiable == True:
+                    self.alcance.update(self.value.identifier,entrada)
 
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
