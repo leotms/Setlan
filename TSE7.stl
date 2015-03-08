@@ -1,0 +1,13 @@
+program {
+    using int x; in
+
+    scan x;
+
+    if (x < 0)
+        print "less"
+    else if (x > 0)
+        print "greater"
+    else 
+        print "equal"
+    ;
+}
