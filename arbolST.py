@@ -132,6 +132,10 @@ class Print(Expression):
                            + locationToString(self.location)
                 type_error_list.append(mensaje)
 
+    def evaluate(self):
+        for element in self.elements:
+            print element
+
 # Clase para la entrada de datos
 class Scan(Expression):
     
@@ -411,6 +415,10 @@ class Number(Expression):
         self.type   = "int"
         self.number = number
 
+    # Para poder ser imprimido por la instruccion print
+    def __str__(self):
+        return str(self.number)
+
     def printTree(self, level):
         printValueIdented(self.type, level)
         printValueIdented(self.number, level + 1)
@@ -427,6 +435,10 @@ class String(Expression):
     def __init__(self, string):
         self.type   = "STRING"
         self.string = string
+
+    # Para poder ser imprimido por la instruccion print
+    def __str__(self):
+        return self.string
 
     def printTree(self, level):
         printValueIdented(self.type, level)
@@ -474,6 +486,10 @@ class Bool(Expression):
         self.type  = 'bool'
         self.value = value
 
+    # Para poder ser imprimido por la instruccion print
+    def __str__(self):
+        return str(self.value)
+
     def printTree(self,level):
         printValueIdented(self.type, level)
         printValueIdented(self.value, level + 1)
@@ -504,6 +520,13 @@ class Set(Expression):
         self.list_expr = list_expr
         self.location  = location
  
+    # Para poder ser imprimido por la instruccion print
+    def __str__(self):
+        setString = "{"
+        for item in self.list_expr:
+            setString += item
+        setString += "}"
+
     def printTree(self,level):
         printValueIdented(self.type, level)
         if self.list_expr:
@@ -606,9 +629,11 @@ class BinaryOperator(Expression):
 
     def evaluate(self):
         operatorName   = self.operator.symbolcheck()
+        # Evaluamos ambos lados del operando
         rigtOp         = self.rightExp.evaluate()
         leftOp         = self.leftExp.evaluate()
 
+        # Aplicamos la operacion indicada y tomamos el resultado.
         result = evalFunctions[operatorName](rigtOp, leftOp)
         return result
 
