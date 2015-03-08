@@ -415,7 +415,10 @@ class RepeatWhileDo(Expression):
         if expreType != 'bool':
             mensaje = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)            
-            type_error_list.append(mensaje)    
+            type_error_list.append(mensaje)  
+
+        self.inst1.symbolcheck()
+        self.inst2.symbolcheck()
 
     def evaluate(self):
         self.inst1.evaluate()
