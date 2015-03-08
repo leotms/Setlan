@@ -344,9 +344,8 @@ class For(Expression):
             while elements != []:
                 ubication = elements.index(max(elements)) 
                 value     = elements.pop(ubication)
-                self.alcance.children[0].update(self.identifier,value)  
-        #Evaluamos las instrucciones
-          
+                self.alcance.update(self.identifier,value)
+                self.inst.evaluate()  
 
 class Direction(Expression):
     
