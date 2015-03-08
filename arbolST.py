@@ -100,7 +100,7 @@ class Assign(Expression):
 
     def evaluate(self):
         #Evaluamos las expresiones
-        Identifier = self.leftIdent.evaluate()
+        Identifier = str(self.leftIdent)
         result     = self.rightExp.evaluate()
         #Actualizamos 
         self.alcance.update(Identifier,result)
@@ -634,7 +634,7 @@ class BinaryOperator(Expression):
         leftOp         = self.leftExp.evaluate()
 
         # Aplicamos la operacion indicada y tomamos el resultado.
-        result = evalFunctions[operatorName](rigtOp, leftOp)
+        result = evalFunctions[operatorName](leftOp, rigtOp)
         return result
 
 #Clase para los Oeradores Unarios
