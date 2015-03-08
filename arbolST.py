@@ -296,6 +296,7 @@ class If(Expression):
         elif self.inst_else:
             self.inst_else.evaluate()
 
+#Clase para el ciclo for
 class For(Expression):
     
     def __init__(self,identifier,direction,expre,inst, location):
@@ -348,7 +349,6 @@ class For(Expression):
         self.inst.symbolcheck() 
 
     def evaluate(self):
-        
         #Obtenemos los elementos del conjunto a iterar
         elements = setAListaDeEnteros(self.alcance.buscar(str(self.expre)).value)
 
@@ -358,14 +358,17 @@ class For(Expression):
                 ubication = elements.index(min(elements)) 
                 value     = elements.pop(ubication)
                 self.alcance.update(str(self.identifier),value)
+                #Evaluamos las instrucciones
                 self.inst.evaluate()
         elif self.direction.evaluate() == 'max': #Recorrido descendente
             while elements != []:
                 ubication = elements.index(max(elements)) 
                 value     = elements.pop(ubication)
                 self.alcance.update(self.identifier,value)
+                #Evaluamos las instrucciones
                 self.inst.evaluate()  
 
+#Clase para la direccion de recorrido del conjunto del for 
 class Direction(Expression):
     
     def __init__(self,value):
@@ -382,6 +385,7 @@ class Direction(Expression):
     def evaluate(self):
         return self.value
 
+#Clase para el ciclo repat-while-do
 class RepeatWhileDo(Expression):
     
     def __init__(self,inst1,expre,inst2,location):
@@ -411,7 +415,13 @@ class RepeatWhileDo(Expression):
         if expreType != 'bool':
             mensaje = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)            
-            type_error_list.append(mensaje)        
+            type_error_list.append(mensaje)    
+
+    def evaluate(self):
+        self.inst1.evaluate()
+        while self.expre.evaluate():
+            self.inst2.evaluate()  
+    
 
 #Clase para los ciclos while condicion do
 class WhileDo(Expression):
@@ -441,6 +451,11 @@ class WhileDo(Expression):
             mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
+
+    def evaluate(self):
+        while self.expre.evaluate():
+            self.inst.evaluate()
+
             
 #Clase para los ciclos repeat instruccion while condicion do
 class RepeatWhile(Expression):
@@ -469,6 +484,11 @@ class RepeatWhile(Expression):
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
 
+    def evaluate(self):
+        while self.expre.evaluate():
+            self.inst.evaluate()
+
+#Clase para los numeros enteros
 class Number(Expression):
     
     def __init__(self, number):
@@ -563,6 +583,7 @@ class Bool(Expression):
     def evaluate(self):
         return str(self.value)
 
+#Clase para la parentizacion
 class Parenthesis(Expression):
     
     def __init__(self, exp):
