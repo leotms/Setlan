@@ -1,0 +1,14 @@
+program {
+    using
+        set s;
+        int k;
+    in
+    s = {2, 3, 1};
+
+    for i min s do {
+        println i;
+        k = i + 1;
+        print k;
+    };
+    print s;
+}
