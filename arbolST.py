@@ -329,9 +329,7 @@ class For(Expression):
     def evaluate(self):
         
         #Obtenemos los elementos del conjunto a iterar
-        expreSet = str(self.alcance.buscar(str(self.expre)).value)
-        elements = expreSet[1:-1].split(',')
-        elements = map(int,elements)
+        elements = setAListaDeEnteros(self.alcance.buscar(str(self.expre)).value)
 
         #Verificamos el orden del recorrido del conjunto
         if self.direction.evaluate() == 'min':   #Recorrido ascendente
@@ -569,12 +567,7 @@ class Set(Expression):
  
     # Para poder ser imprimido por la instruccion print
     def __str__(self):
-        setString = "{"
-        for item in self.list_expr:
-            setString += str(item) + ","
-        setString = setString[:-1]
-        setString += "}"
-        return setString
+        return listaDeEnterosASet(self.list_expr)
 
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -656,7 +649,9 @@ class BinaryOperator(Expression):
         'EQUAL'  : igual,
         # Logicos
         'AND'   : logicAnd,
-        'OR'    : logicOr
+        'OR'    : logicOr,
+        # Sobre Conjuntos
+        'CONTAINMENT' : contiene
     }
  
     def __init__(self, leftExp, operator, rightExp, location):
