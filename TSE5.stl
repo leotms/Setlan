@@ -1,4 +1,5 @@
 program {
+<<<<<<< HEAD
     using
         set s;
         int k;
@@ -12,3 +13,31 @@ program {
 
     print s;
 }
+=======
+	using 
+		int x, y;
+		bool a,b;
+	in 
+
+	x = 2;
+	y = 1;
+
+	println "Aqui estamos probando los comparadores: ";
+	print y < x;
+	print y > x;
+	print x == y;
+	print x /= y;
+	println "--------";
+
+	println "Aqui probaremos los booleanos: ";
+	a = y < x;
+	b = x < y;
+
+	print a and b;
+	print a or b;
+	print a == b;
+	print a /= b;
+	println "-------"; 
+
+}
+>>>>>>> 6bb2c46230eca4134cfe26b9d4a58569ae9024a2
