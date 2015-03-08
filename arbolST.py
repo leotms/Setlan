@@ -594,18 +594,30 @@ class BinaryOperator(Expression):
             ('int', 'GREATEQ', 'int'): 'bool',
             ('int', 'EQUAL', 'int'): 'bool',
             ('bool', 'EQUAL', 'bool'): 'bool',
-            ('set', 'EQUAL', 'set'): 'set',
             ('int', 'UNEQUAL', 'int'): 'bool',
+            ('set', 'EQUAL', 'set'): 'set',
             ('bool', 'UNEQUAL', 'bool'): 'bool',
             ('set', 'UNEQUAL', 'set'): 'bool',
             ('int', 'CONTAINMENT', 'set'): 'bool'
         }
 
     evalFunctions = {
+        # Aritmeticos
         'PLUS'  : suma,
         'MINUS' : resta,
         'TIMES' : multiplicacion,
-        'DIVIDE': division
+        'DIVIDE': division,
+        'MODULE': modulo,
+        # Aritmetico-Logicos
+        'LESS'  : menor,
+        'GREAT': mayor,
+        'LESSEQ': menorIgual,
+        'GREATEQ': mayorIgual,
+        'UNEQUAL': desigual,
+        'EQUAL'  : igual,
+        # Logicos
+        'AND'   : logicAnd,
+        'OR'    : logicOr
     }
  
     def __init__(self, leftExp, operator, rightExp, location):
