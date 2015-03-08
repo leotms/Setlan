@@ -56,7 +56,7 @@ def p_instruccion_print(symbol):
 # Regla para leer una variable
 def p_instruccion_scan(symbol):
     "instruccion : SCAN IDENTIFIER"
-    symbol[0] = Scan(Identifier(symbol[2]),localize(symbol,1))
+    symbol[0] = Scan(Identifier(symbol[2],localize(symbol,2)),localize(symbol,1))
 
 ################################################################################
 #						    INSTRUCCION DE BLOQUE  					           #
@@ -136,7 +136,7 @@ def p_instruccion_if(symbol):
 
 def p_instruccion_for(symbol):
     "instruccion : FOR IDENTIFIER direccion expresion DO instruccion"
-    symbol[0] = For(Identifier(symbol[2]),symbol[3],symbol[4],symbol[6],localize(symbol,1))
+    symbol[0] = For(Identifier(symbol[2],localize(symbol,2)),symbol[3],symbol[4],symbol[6],localize(symbol,1))
 
 def p_expresion_direccion(symbol):
     """direccion : MIN

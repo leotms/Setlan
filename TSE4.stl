@@ -2,6 +2,7 @@ program {
 	using
 		set b;
 		bool tengoHambre;
+		int x,y;
 	in
 
 	b = {1,2,3};
@@ -11,4 +12,7 @@ program {
 
 	tengoHambre = true;
 	print tengoHambre;
+	x = 12;
+	y = 20;
+	print x + y;
 }
