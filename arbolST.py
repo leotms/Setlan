@@ -289,6 +289,13 @@ class If(Expression):
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
 
+    def evaluate(self):
+        condition = self.condition.evaluate()
+        if condition:
+            self.inst_if.evaluate()
+        elif self.inst_else:
+            self.inst_else.evaluate()
+
 class For(Expression):
     
     def __init__(self,identifier,direction,expre,inst, location):
