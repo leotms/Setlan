@@ -1,0 +1,11 @@
+program {
+    using
+        int i,j,k;
+        bool b,c;
+        set s;
+    in
+    
+    i = 8;
+    j = 12;
+    k = 12/8;   
+}

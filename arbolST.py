@@ -465,7 +465,7 @@ class Identifier(Expression):
             return str(self.identifier)
 
     def evaluate(self):
-        return self.identifier
+        return self.alcance.buscar(self.identifier).value
 
 # Clase para definir una expresion booleana.
 class Bool(Expression):

@@ -143,7 +143,7 @@ class tablaSimbolos(object):
                 #     self.error.append(string)
                 #     return False
             else:
-                return self.parent.update(variable, dataType, value)
+                return self.parent.update(variable, value, dataType)
         else:
-            print "SymTable.update: No " + variable + " in symbols"
+            print "SymTable.update: No " + str(variable) + " in symbols"
             return False
