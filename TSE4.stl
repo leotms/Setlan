@@ -1,9 +1,14 @@
 program {
 	using
 		set b;
+		bool tengoHambre;
 	in
 
 	b = {1,2,3};
 	println "hola, este es un arreglo: ", b;
-	print "Hello, baby :D"
+	print "Hello, baby :D";
+	println tengoHambre;
+
+	tengoHambre = true;
+	print tengoHambre;
 }

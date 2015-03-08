@@ -492,7 +492,6 @@ class Bool(Expression):
         self.type  = 'bool'
         self.value = value
 
-    # Para poder ser imprimido por la instruccion print
     def __str__(self):
         return str(self.value)
 
@@ -502,6 +501,9 @@ class Bool(Expression):
 
     def symbolcheck(self):
         return 'bool'
+
+    def evaluate(self):
+        return str(self.value)
 
 class Parenthesis(Expression):
     
