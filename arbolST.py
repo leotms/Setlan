@@ -336,7 +336,7 @@ class For(Expression):
         #Evaluamos las instrucciones
         self.inst.evaluate()     
 
-
+#Clase para la direccion de recorrido del conjunto del for 
 class Direction(Expression):
     
     def __init__(self,value):
@@ -350,6 +350,7 @@ class Direction(Expression):
     def evaluate(self):
         return (self.value)
 
+#Clase para el ciclo repat-do-while
 class RepeatWhileDo(Expression):
     
     def __init__(self,inst1,expre,inst2,location):
@@ -697,10 +698,17 @@ class BinaryOperator(Expression):
 
     def evaluate(self):
         operatorName   = self.operator.symbolcheck()
+
+        empilar(self.leftExp, self.alcance)
+        empilar(self.rightExp, self.alcance)
+
         # Evaluamos ambos lados del operando
         rigtOp         = self.rightExp.evaluate()
         leftOp         = self.leftExp.evaluate()
 
+        print "Operadores"
+        print self.alcance.buscar(self.leftExp.evaluate())
+        print rigtOp
         # Aplicamos la operacion indicada y tomamos el resultado.
         result = evalFunctions[operatorName](leftOp, rigtOp)
         return result
