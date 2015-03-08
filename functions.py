@@ -23,3 +23,5 @@ def multiplicacion(x,y):
 def division(x,y):
 	return x//y
 
+def union(x,y): pass
+

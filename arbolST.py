@@ -276,6 +276,7 @@ class If(Expression):
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
 
+#Clase para el ciclo for
 class For(Expression):
     
     def __init__(self,identifier,direction,expre,inst, location):
@@ -298,7 +299,7 @@ class For(Expression):
 
     def symbolcheck(self):
         #Creamos la tabla para el alcance local del for        
-        alcanceFor = tablaSimbolos()
+        alcanceFor        = tablaSimbolos()
         alcanceFor.parent = self.alcance
         alcanceFor.insert(self.identifier, 'int', False)
         self.alcance.children.append(alcanceFor)
@@ -314,6 +315,28 @@ class For(Expression):
                       + locationToString(self.location)   
             type_error_list.append(mensaje) 
 
+    def evaluate(self):
+        
+        #Obtenemos los elementos del conjunto a iterar
+        expreSet = str(self.alcance.buscar(self.expre.evaluate()).value)
+        elements = expreSet[1:-1].split(',')
+        elements = map(int,elements)
+
+        #Verificamos el orden del recorrido del conjunto
+        if self.direction.evaluate() == 'min':   #Recorrido ascendente
+            while elements != []:
+                ubication = elements.index(min(elements)) 
+                value     = elements.pop(ubication)
+                self.alcance.children[0].update(self.identifier,value)
+        elif self.direction.evaluate() == 'max': #Recorrido descendente
+            while elements != []:
+                ubication = elements.index(max(elements)) 
+                value     = elements.pop(ubication)
+                self.alcance.children[0].update(self.identifier,value)  
+        #Evaluamos las instrucciones
+        self.inst.evaluate()     
+
+
 class Direction(Expression):
     
     def __init__(self,value):
@@ -323,6 +346,9 @@ class Direction(Expression):
     def printTree(self,level):
         printValueIdented(self.type, level)
         printValueIdented(self.value,level + 1)
+    
+    def evaluate(self):
+        return (self.value)
 
 class RepeatWhileDo(Expression):
     
@@ -353,7 +379,13 @@ class RepeatWhileDo(Expression):
         if expreType != 'bool':
             mensaje = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)            
-            type_error_list.append(mensaje)        
+            type_error_list.append(mensaje)  
+
+    def evaluate(self):
+        self.inst1.evaluate()
+        while self.expre.evaluate():
+            self.inst2.evaluate()  
+    
 
 #Clase para los ciclos while condicion do
 class WhileDo(Expression):
@@ -383,6 +415,11 @@ class WhileDo(Expression):
             mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
+
+    def evaluate(self):
+        while self.expre.evaluate():
+            self.inst.evaluate()
+
             
 #Clase para los ciclos repeat instruccion while condicion do
 class RepeatWhile(Expression):
@@ -410,6 +447,11 @@ class RepeatWhile(Expression):
             mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje)
+
+    def evaluate(self):
+        while self.expre.evaluate():
+            self.inst.evaluate()
+
  
 #Clase para los numeros enteros
 class Number(Expression):
@@ -606,7 +648,8 @@ class BinaryOperator(Expression):
         'PLUS'  : suma,
         'MINUS' : resta,
         'TIMES' : multiplicacion,
-        'DIVIDE': division
+        'DIVIDE': division,
+        'UNION' : union
     }
  
     def __init__(self, leftExp, operator, rightExp, location):
