@@ -134,7 +134,7 @@ class Print(Expression):
 
     def evaluate(self):
         for element in self.elements:
-            print element
+            print element.evaluate()
 
 # Clase para la entrada de datos
 class Scan(Expression):
@@ -436,16 +436,20 @@ class String(Expression):
         self.type   = "STRING"
         self.string = string
 
-    # Para poder ser imprimido por la instruccion print
     def __str__(self):
-        return self.string
-
+        textOnly = self.string[1:]
+        textOnly = textOnly[:-1]
+        return textOnly
+        
     def printTree(self, level):
         printValueIdented(self.type, level)
         printValueIdented(self.string, level + 1)
 
     def symbolcheck(self):
         return 'string'
+
+    def evaluate(self):
+        return str(self)
 
 # Clase para definir un identificador o variable.
 class Identifier(Expression):
@@ -524,8 +528,10 @@ class Set(Expression):
     def __str__(self):
         setString = "{"
         for item in self.list_expr:
-            setString += item
+            setString += str(item) + ","
+        setString = setString[:-1]
         setString += "}"
+        return setString
 
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -545,6 +551,9 @@ class Set(Expression):
                     type_error_list.append(mensaje)
                     return exp.symbolcheck()
             return 'set'
+
+    def evaluate(self):
+        return self
 
 # Clase para definir los tipos.
 class Type(Expression):
