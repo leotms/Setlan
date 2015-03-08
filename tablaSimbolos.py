@@ -129,27 +129,21 @@ class tablaSimbolos(object):
             string = "Variable '" + variable+ "' no definida."
             self.error(string)
 
-    # def update(self, variable, dataType, value):
-    #     if self.contains(variable):
-    #         if variable in self.symbols:
-    #             symbol = self.symbols[variable]
+    def update(self, variable, value, dataType = None):
+        if self.contains(variable):
+            if variable in self.symbols:
+                symbol = self.symbols[variable]
 
-    #             if dataType == symbol.dataType:
-    #                 symbol.value = value
-    #                 self.symbols[variable] = symbol
-    #                 return True
-    #             else:
-    #                 string = "SymTable.update: Different data types"
-    #                 self.error.append(string)
-    #                 return False
-    #         else:
-    #             return self.outer.update(variable, dataType, value)
-    #     else:
-    #         print "SymTable.update: No " + variable + " in symbols"
-    #         return False
-
-    # def lookup(self, value):
-    #     pass
-
-    # def error(self, mensaje):
-    #     self.errors.append(mensaje)
+                #if dataType == symbol.dataType:
+                symbol.value = value
+                self.symbols[variable] = symbol
+                return True
+                # else:
+                #     string = "SymTable.update: Different data types"
+                #     self.error.append(string)
+                #     return False
+            else:
+                return self.parent.update(variable, dataType, value)
+        else:
+            print "SymTable.update: No " + variable + " in symbols"
+            return False

@@ -52,6 +52,8 @@ if __name__ == '__main__':
                 for error in parser.type_error_list:
                     print error
 
+            arbol.evaluate()
+
             # Involucramos los flags, para la impresion.
             if '-t' in sys.argv:
                 print "\t ------- LEXER TOKENS -------"

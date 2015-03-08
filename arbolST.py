@@ -12,7 +12,8 @@ Ult. Modificacion el 09/02/2015
 
 # Importaciones necesarias
 from tablaSimbolos import *
-from   lexer       import find_column
+from lexer         import find_column
+from functions     import *
 
 # Errores de Tipo
 type_error_list = []
@@ -51,6 +52,9 @@ class Program(Expression):
         if self.statement.symbolcheck():
             return self.alcance
 
+    def evaluate(self):
+        self.statement.evaluate()
+
 #Clase para la asignacion de expresiones
 class Assign(Expression):
 
@@ -59,6 +63,7 @@ class Assign(Expression):
         self.leftIdent = leftIdent
         self.rightExp  = rightExp
         self.location  = location
+        self.alcance   = tablaSimbolos()
 
     def printTree(self,level):
         printValueIdented(self.type, level)
@@ -92,6 +97,13 @@ class Assign(Expression):
                 mensaje = "ERROR: No se puede modificar " + self.leftIdent\
                           + locationToString(self.location)
                 type_error_list.append(mensaje)
+
+    def evaluate(self):
+        #Evaluamos las expresiones
+        Identifier = self.leftIdent.evaluate()
+        result     = self.rightExp.evaluate()
+        #Actualizamos 
+        self.alcance.update(Identifier,result)
 
 # Clase para la impresion por consola
 class Print(Expression):
@@ -176,6 +188,10 @@ class Block(Expression):
                 empilar(inst, self.alcance)
                 inst.symbolcheck()
         return True
+
+    def evaluate(self):
+        for inst in self.list_inst:
+            inst.evaluate()
  
 #Clase para las declaraciones
 class Using(Expression):
@@ -213,6 +229,10 @@ class Declaration(Expression):
     def symbolcheck(self):
         for var in self.list_id:
             self.alcance.insert(var, self.type.type)
+
+    # La declaracion de variables no se evalua
+    def evaluate(self):
+        pass
 
 #Clase para los condicionales
 class If(Expression):   
@@ -398,6 +418,9 @@ class Number(Expression):
     def symbolcheck(self):
         return 'int'
 
+    def evaluate(self):
+        return int(self.number)
+
 # Clase para definir un string o cadena de caracteres.
 class String(Expression):
 
@@ -440,6 +463,9 @@ class Identifier(Expression):
             if not mensaje in type_error_list: 
                 type_error_list.append(mensaje)
             return str(self.identifier)
+
+    def evaluate(self):
+        return self.identifier
 
 # Clase para definir una expresion booleana.
 class Bool(Expression):
@@ -509,7 +535,7 @@ class Type(Expression):
 #Classe para los Operadores Binarios
 class BinaryOperator(Expression):
 
-    global binaryOperatorTypeTuples
+    global binaryOperatorTypeTuples, evalFunctions
     binaryOperatorTypeTuples = {
             ('int', 'TIMES', 'int'): 'int',
             ('int', 'PLUS', 'int'): 'int',
@@ -538,9 +564,16 @@ class BinaryOperator(Expression):
             ('set', 'UNEQUAL', 'set'): 'bool',
             ('int', 'CONTAINMENT', 'set'): 'bool'
         }
+
+    evalFunctions = {
+        'PLUS'  : suma,
+        'MINUS' : resta,
+        'TIMES' : multiplicacion,
+        'DIVIDE': division
+    }
  
-    def __init__(self, lefExp, operator, rightExp, location):
-        self.lefExp   = lefExp
+    def __init__(self, leftExp, operator, rightExp, location):
+        self.leftExp  = leftExp
         self.operator = Operator(operator)
         self.rightExp = rightExp
         self.location = location
@@ -548,28 +581,36 @@ class BinaryOperator(Expression):
  
     def printTree(self, level):
         self.operator.printTree(level)
-        self.lefExp.printTree(level + 1)
+        self.leftExp.printTree(level + 1)
         self.rightExp.printTree(level + 1)
 
     def symbolcheck(self):
         #Pasamos la tabla de simbolos
-        empilar(self.lefExp, self.alcance)
+        empilar(self.leftExp, self.alcance)
         empilar(self.rightExp, self.alcance)
         #Verificamos los tipos de cada operando
-        lefExpType     = self.lefExp.symbolcheck()
+        leftExpType     = self.leftExp.symbolcheck()
         rightExpType   = self.rightExp.symbolcheck()
         operatorName   = self.operator.symbolcheck()
 
-        newTuple = (lefExpType, operatorName, rightExpType)
+        newTuple = (leftExpType, operatorName, rightExpType)
         if newTuple in binaryOperatorTypeTuples:
             return binaryOperatorTypeTuples[newTuple]
         else:
             mensaje = "ERROR: No se puede aplicar '" + operatorName\
-                      + "' en operandos de tipo '" + lefExpType\
+                      + "' en operandos de tipo '" + leftExpType\
                       + "' y '" + rightExpType + "'."\
                       + locationToString(self.location)
             type_error_list.append(mensaje)
             return False
+
+    def evaluate(self):
+        operatorName   = self.operator.symbolcheck()
+        rigtOp         = self.rightExp.evaluate()
+        leftOp         = self.leftExp.evaluate()
+
+        result = evalFunctions[operatorName](rigtOp, leftOp)
+        return result
 
 #Clase para los Oeradores Unarios
 class UnaryOperator(Expression):
@@ -658,3 +699,4 @@ class Operator(Expression):
 
     def symbolcheck(self):
         return self.name
+
