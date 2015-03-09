@@ -688,7 +688,7 @@ class BinaryOperator(Expression):
             ('int', 'MODULE', 'int'): 'int',
             ('set', 'UNION', 'set'): 'set',
             ('set', 'DIFERENCE','set'): 'set',
-            ('set', 'INSERSECTION','set'):'set',
+            ('set', 'INTERSECTION','set'):'set',
             ('int', 'PLUSMAP', 'set'): 'set',
             ('int', 'MINUSMAP', 'set'): 'set',
             ('int', 'TIMESMAP', 'set'): 'set',
@@ -726,8 +726,12 @@ class BinaryOperator(Expression):
         # Logicos
         'AND'   : logicAnd,
         'OR'    : logicOr,
-        # Sobre Conjuntos
-        'CONTAINMENT' : contiene
+        # Naturales Sobre Conjuntos
+        'CONTAINMENT' : contiene,
+        'UNION' : union,
+        'INTERSECTION': interseccion,
+        'DIFERENCE'   : diferencia
+
     }
  
     def __init__(self, leftExp, operator, rightExp, location):
