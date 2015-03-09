@@ -16,14 +16,20 @@ lenguaje Setlan.
 
 # Suma para dos enteros
 def suma(x,y):
+    if x + y > 2147483646:
+        raise Exception("\nError: Overflow de numero entero ")
     return x + y
 
 # Resta para dos enteros
 def resta(x,y):
+    if x - y < -2147483646:
+        raise Exception("\nError: Overflow de numero entero ")
     return x - y
 
 # Multiplicacion de dos enteros
 def multiplicacion(x,y):
+    if x*y > 2147483646 or x*y < -2147483646:
+        raise Exception("\nError: Overflow de numero entero ")
     return x*y
 
 # Division entera de dos enteros.
@@ -188,4 +194,42 @@ def mapeoModulo(x,set):
 
     newSet = listaDeEnterosASet(listaNewSet)
     return newSet
+
+# OPERACIONES BINARIAS UNARIAS
+
+# Devuelve el numero negativo de un numero x
+def negativo(x):
+    return -x
+
+# Devuelve el negacion de una expresion booleana.
+def negar(boolean):
+    if boolean == 'false':
+        return 'true'
+    else:
+        return 'false'
+
+# Retorna el valor minimo en un conjunto
+def minimo(set):
+    if not set or str(set) == "{}":
+        raise Exception("\nError: Conjunto vacio no tiene 'minimo' ")
+
+    listaSet = setAListaDeEnteros(set)
+    return min(listaSet)
+
+# Retorna el valor maximo en un conjunto
+def maximo(set):
+    if not set or str(set) == "{}":
+        raise Exception("\nError: Conjunto vacio no tiene 'maximo' ")
+
+    listaSet = setAListaDeEnteros(set)
+    return max(listaSet)
+
+# Retorna el numero de Elementos de un conjunto
+def numElementos(set):
+    if not set or str(set) == "{}":
+        return 0
+
+    listaSet = setAListaDeEnteros(set)
+    return len(listaSet)
+
 

@@ -128,7 +128,7 @@ class Print(Expression):
             #Verificamos que se impriman expresiones de tipos permitidos
             if not elemtype in acceptedTypes:
                 mensaje =  "ERROR: No se puede imprimir '"\
-                           + elemtype + "' "\
+                           + str(elemtype) + "' "\
                            + locationToString(self.location)
                 type_error_list.append(mensaje)
 
@@ -634,7 +634,13 @@ class Set(Expression):
             return 'set'
 
     def evaluate(self):
-        return self
+        listaEnteros = []
+        if not self.list_expr:
+            return listaDeEnterosASet(listaEnteros)
+
+        for exp in self.list_expr:
+            listaEnteros.append(exp.evaluate())
+        return listaDeEnterosASet(listaEnteros)
 
 # Clase para definir los tipos.
 class Type(Expression):
@@ -648,7 +654,7 @@ class Type(Expression):
 #Classe para los Operadores Binarios
 class BinaryOperator(Expression):
 
-    global binaryOperatorTypeTuples, evalFunctions
+    global binaryOperatorTypeTuples, evalBinaryFunctions
     binaryOperatorTypeTuples = {
             ('int', 'TIMES', 'int'): 'int',
             ('int', 'PLUS', 'int'): 'int',
@@ -678,7 +684,7 @@ class BinaryOperator(Expression):
             ('int', 'CONTAINMENT', 'set'): 'bool'
         }
 
-    evalFunctions = {
+    evalBinaryFunctions = {
         # Aritmeticos
         'PLUS'  : suma,
         'MINUS' : resta,
@@ -706,7 +712,6 @@ class BinaryOperator(Expression):
         'TIMESMAP' : mapeoMultiplicacion,
         'DIVIDEMAP': mapeoDivision,
         'MODULEMAP': mapeoModulo
-
     }
  
     def __init__(self, leftExp, operator, rightExp, location):
@@ -749,7 +754,7 @@ class BinaryOperator(Expression):
 
         # Aplicamos la operacion indicada y tomamos el resultado.
         try:
-            result = evalFunctions[operatorName](leftOp, rigtOp)
+            result = evalBinaryFunctions[operatorName](leftOp, rigtOp)
         except Exception as Mensaje:
             string =  Mensaje.args[0] + locationToString(self.location)
             print string
@@ -759,13 +764,21 @@ class BinaryOperator(Expression):
 #Clase para los Oeradores Unarios
 class UnaryOperator(Expression):
 
-    global unaryOperatorTypeTuples
+    global unaryOperatorTypeTuples, evalUnaryFunctions
     unaryOperatorTypeTuples = {
         ('MINUS','int') : 'int',
         ('MAXVALUE','set') : 'int',
         ('MINVALUE','set') : 'int',
         ('NUMELEMENTS','set'): 'int',
         ('NOT', 'bool') : 'bool'
+    }
+
+    evalUnaryFunctions = {
+        'MINUS' : negativo,
+        'NOT'   : negar,
+        'MINVALUE' : minimo,
+        'MAXVALUE' : maximo,
+        'NUMELEMENTS': numElementos
     }
     
     def __init__(self,operator,expresion, location):
@@ -793,7 +806,21 @@ class UnaryOperator(Expression):
                       + "' en operando de tipo '" + expresionType + "' "\
                       + locationToString(self.location)
             type_error_list.append(mensaje)
-            return False        
+            return False 
+
+    def evaluate(self):
+        operatorName   = self.operator.symbolcheck()
+        # Evaluamos ambos lados del operando
+        expresion     = self.expresion.evaluate()
+
+        # Aplicamos la operacion indicada y tomamos el resultado.
+        try:
+            result = evalUnaryFunctions[operatorName](expresion)
+        except Exception as Mensaje:
+            string =  Mensaje.args[0] + locationToString(self.location)
+            print string
+            exit()
+        return result    
 
 # Classe para los operadores:
 class Operator(Expression):
