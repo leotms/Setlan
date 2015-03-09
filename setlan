@@ -45,15 +45,6 @@ if __name__ == '__main__':
 
         else:
 
-            # Realizamos el chequeo de tipos
-            symTable = arbol.symbolcheck()
-
-            if parser.type_error_list:
-                for error in parser.type_error_list:
-                    print error
-
-            arbol.evaluate()
-
             # Involucramos los flags, para la impresion.
             if '-t' in sys.argv:
                 print "\n\t ------- LEXER TOKENS -------"
@@ -63,8 +54,18 @@ if __name__ == '__main__':
                 print "\n\t ------- AST -------"
                 arbol.printTree(0)
                 print "\t ------------------- \n"
+
+            # Realizamos el chequeo de tipos
+            symTable = arbol.symbolcheck()
+
+            if parser.type_error_list:
+                for error in parser.type_error_list:
+                    print error
+
             if '-s' in sys.argv:
                 print "\n\t ------- TABLA DE SIMBOLOS -------"
                 symTable.printTable(0)
                 print "\t --------------------------------- \n"
 
+            # Se ejecuta el programa Setlan
+            arbol.evaluate()

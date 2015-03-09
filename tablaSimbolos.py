@@ -111,22 +111,23 @@ class tablaSimbolos(object):
             return self.parent.buscar(variable)
         else:
             print "Variable " + str(variable) + " no esta definida."
+            exit()
 
     #Inserta un simbolo en la tabla de simbolos local
     def insert(self, variable, dataType, modifiable = True):
         if not self.contains(variable):
             self.symbols[variable] = Simbolo(variable, dataType, modifiable)
         else:
-            string = "Variable '" + str(variable) + "' ya esta definida."
-            print(string)
+            print "Variable '" + str(variable) + "' ya esta definida."
+            exit()
 
     # Elimina un simbolo de la tabla de simbolos actual
     def delete(self, variable):
         if self.contains(variable):
             del self.symbols[variable]
         else:
-            string = "Variable '" + variable+ "' no definida."
-            self.error(string)
+            print "Variable '" + variable+ "' no definida."
+            exit()
 
     def update(self, variable, value, dataType = None):
         if self.contains(variable):
@@ -134,11 +135,10 @@ class tablaSimbolos(object):
                 symbol = self.symbols[variable]
                 symbol.value = value
                 self.symbols[variable] = symbol
-                return True
             else:
                 return self.parent.update(variable, value, dataType)
         elif self.parent:
             return self.parent.update(variable, value, dataType)
         else:
             print "Variable '" + str(variable) + "' no definida."
-            return False
+            exit()
