@@ -94,7 +94,7 @@ class Assign(Expression):
         if LeftIdentType:
             identifier = self.alcance.buscar(self.leftIdent.identifier)
             if not identifier.modifiable:
-                mensaje = "ERROR: No se puede modificar " + self.leftIdent\
+                mensaje = "ERROR: No se puede modificar " + str(self.leftIdent)\
                           + locationToString(self.location)
                 type_error_list.append(mensaje)
 
@@ -102,8 +102,11 @@ class Assign(Expression):
         #Evaluamos las expresiones
         Identifier = str(self.leftIdent)
         result     = self.rightExp.evaluate()
+        
+        identifier = self.alcance.buscar(Identifier)
         #Actualizamos 
-        self.alcance.update(Identifier,result)
+        if identifier.modifiable:
+            self.alcance.update(Identifier,result)
 
 # Clase para la impresion por consola
 class Print(Expression):
