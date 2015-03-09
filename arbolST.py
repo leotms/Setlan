@@ -165,16 +165,38 @@ class Scan(Expression):
     def evaluate(self):
         #Buscamos la variable donde se almacenara el valor de entrada
         simbol  = self.alcance.buscar(self.value.identifier)
+
         if simbol:
             #Verificamos la accion a realizar segun el tipo
             if simbol.type == 'int':
-                entrada = input()            
-                if isinstance(entrada, int) and simbol.modifiable == True:
-                    self.alcance.update(self.value.identifier,entrada)
+                ejecutar = True                
+                while ejecutar:
+                    entrada    = raw_input()
+
+                    #Verificamos si la entrada es un numero
+                    for i in range(0,len(entrada)):
+                        esNumero = entrada[i] in '-0123456789'
+                        if not esNumero:
+                            esNumero = False
+                            break
+                    if esNumero:
+                        entrada = int(entrada)  
+
+                    #Actualizamos el valor         
+                    if isinstance(entrada, int) and simbol.modifiable == True:
+                        self.alcance.update(self.value.identifier,entrada)
+                        ejecutar = False
+                    else:
+                        ejecutar = True
             elif simbol.type == 'bool':
-                entrada = raw_input()
-                if entrada in ['false','true'] and simbol.modifiable == True:
-                    self.alcance.update(self.value.identifier,entrada)
+                ejecutar = True                
+                while ejecutar:
+                    entrada = raw_input()
+                    if entrada in ['false','true'] and simbol.modifiable == True:
+                        self.alcance.update(self.value.identifier,entrada)
+                        ejecutar = False
+                    else:
+                        ejecutar = True
 
 #Un bloque es una secuencia de Expresiones
 class Block(Expression):
@@ -421,9 +443,13 @@ class RepeatWhileDo(Expression):
         self.inst2.symbolcheck()
 
     def evaluate(self):
-        self.inst1.evaluate()
-        while self.expre.evaluate():
-            self.inst2.evaluate()  
+        ejecutar = True
+        while ejecutar:
+            self.inst1.evaluate()
+            if self.expre.evaluate(): #Verificamos que se cumpla la condicion
+                self.inst2.evaluate()  
+            else:
+                ejecutar = False
     
 
 #Clase para los ciclos while condicion do
@@ -455,6 +481,8 @@ class WhileDo(Expression):
             mensaje += locationToString(self.location)
             type_error_list.append(mensaje) 
 
+        self.inst.symbolcheck()
+
     def evaluate(self):
         while self.expre.evaluate():
             self.inst.evaluate()
@@ -485,9 +513,12 @@ class RepeatWhile(Expression):
         if expreType != 'bool':
             mensaje  = "ERROR: La condicion del while debe ser de tipo 'bool'."
             mensaje += locationToString(self.location)
-            type_error_list.append(mensaje) 
+            type_error_list.append(mensaje)
+
+        self.inst.symbolcheck() 
 
     def evaluate(self):
+        self.inst.evaluate()
         while self.expre.evaluate():
             self.inst.evaluate()
 
