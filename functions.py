@@ -68,13 +68,17 @@ def desigual(x,y):
 
 # OPERACIONES PARA BINARIOS SOBRE CONJUNTOS
 def setAListaDeEnteros(s):
+    if not s or str(s) == "{}":
+        elements = []
+        return elements
+
     expreSet = str(s)
     elements = expreSet[1:-1].split(',')
     elements = map(int,elements)
     return elements
 
 def listaDeEnterosASet(l):
-    if l == []:
+    if not l or l == []:
         return "{}"
 
     setString = "{"
@@ -126,4 +130,14 @@ def diferencia(set1,set2):
     newSet = listaDeEnterosASet(listaSet1)
     return newSet
 
+# Retorna el mapeo suma sobre el conjunto
+def mapeoSuma(x,set):
+    listaSet = setAListaDeEnteros(set)
+    listaNewSet = []
+
+    for elem in listaSet:
+        listaNewSet.append(suma(x,elem))
+
+    newSet = listaDeEnterosASet(listaNewSet)
+    return newSet
 

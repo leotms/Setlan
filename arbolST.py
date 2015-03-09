@@ -699,7 +699,9 @@ class BinaryOperator(Expression):
         'CONTAINMENT' : contiene,
         'UNION' : union,
         'INTERSECTION': interseccion,
-        'DIFERENCE'   : diferencia
+        'DIFERENCE'   : diferencia,
+        # Mapeo sobre conjuntos
+        'PLUSMAP'  : mapeoSuma
 
     }
  
