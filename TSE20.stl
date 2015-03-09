@@ -1,0 +1,7 @@
+program {
+	using int x,y,z; set a; in
+
+	x = 1; y = 2; z = 3;
+	a = {x,y,z};
+	println a;
+}

@@ -1,0 +1,6 @@
+program {
+	using set a; in
+	a = {1,2,3};
+	for i min a do
+		print i
+}
