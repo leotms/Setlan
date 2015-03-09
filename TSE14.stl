@@ -1,0 +1,11 @@
+program {
+	using	int x,y; in
+
+	#Prueba la division por cero
+	x = 1;
+	y = 0;
+
+	println x/y;
+	println "hello!"
+
+}
