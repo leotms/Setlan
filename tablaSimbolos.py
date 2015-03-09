@@ -119,7 +119,6 @@ class tablaSimbolos(object):
         else:
             string = "Variable '" + str(variable) + "' ya esta definida."
             print(string)
-            #self.error(string)
 
     # Elimina un simbolo de la tabla de simbolos actual
     def delete(self, variable):
@@ -133,19 +132,13 @@ class tablaSimbolos(object):
         if self.contains(variable):
             if variable in self.symbols:
                 symbol = self.symbols[variable]
-
-                #if dataType == symbol.dataType:
                 symbol.value = value
                 self.symbols[variable] = symbol
                 return True
-                # else:
-                #     string = "SymTable.update: Different data types"
-                #     self.error.append(string)
-                #     return False
             else:
                 return self.parent.update(variable, value, dataType)
         elif self.parent:
             return self.parent.update(variable, value, dataType)
         else:
-            print "SymTable.update: No " + str(variable) + " in symbols"
+            print "Variable '" + str(variable) + "' no definida."
             return False

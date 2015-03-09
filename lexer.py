@@ -251,23 +251,23 @@ def t_INTERSECTION(t):
     lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
-def t_LESS(t):
-    r'<'
-    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
-    return t
-
 def t_LESSEQ(t):
     r'<='
     lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
-def t_GREAT(t):
-    r'>'
+def t_LESS(t):
+    r'<'
     lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
 def t_GREATEQ(t):
     r'>='
+    lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
+    return t
+
+def t_GREAT(t):
+    r'>'
     lexer_tokenList.append(getTokenString(t.lexer.lexdata,t))
     return t
 
