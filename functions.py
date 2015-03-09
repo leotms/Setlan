@@ -74,6 +74,9 @@ def setAListaDeEnteros(s):
     return elements
 
 def listaDeEnterosASet(l):
+    if l == []:
+        return "{}"
+
     setString = "{"
     for item in l:
         setString += str(item) + ","
@@ -85,3 +88,42 @@ def listaDeEnterosASet(l):
 def contiene(x,set):
     lista = setAListaDeEnteros(set)
     return x in lista
+
+# Retorna un nuevo conjunto resultado de la union de dos conjuntos
+def union(set1, set2):
+    listaSet1 = setAListaDeEnteros(set1)
+    listaSet2 = setAListaDeEnteros(set2)
+
+    for elem in listaSet1:
+        if not elem in listaSet2:
+            listaSet2.append(elem)
+
+    newSet = listaDeEnterosASet(listaSet2)
+    return newSet
+
+# Devuelve en un nuevo conjunto la interseccion de dos conjuntos
+def interseccion(set1,set2):
+    listaSet1 = setAListaDeEnteros(set1)
+    listaSet2 = setAListaDeEnteros(set2)
+    listaNewSet = []
+
+    for elem in listaSet1:
+        if elem in listaSet2:
+            listaNewSet.append(elem)
+
+    newSet = listaDeEnterosASet(listaNewSet)
+    return newSet
+
+# Retorna un el conjunto diferencia
+def diferencia(set1,set2):
+    listaSet1 = setAListaDeEnteros(set1)
+    listaSet2 = setAListaDeEnteros(set2)
+
+    for elem in listaSet2:
+        if elem in listaSet1:
+            listaSet1.remove(elem)
+
+    newSet = listaDeEnterosASet(listaSet1)
+    return newSet
+
+
