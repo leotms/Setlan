@@ -375,7 +375,7 @@ class For(Expression):
 
     def evaluate(self):
         #Obtenemos los elementos del conjunto a iterar
-        elements = setAListaDeEnteros(self.alcance.buscar(str(self.expre)).value)
+        elements = setAListaDeEnteros(self.expre.evaluate())
 
         #Verificamos el orden del recorrido del conjunto
         if self.direction.evaluate() == 'min':   #Recorrido ascendente
@@ -389,7 +389,7 @@ class For(Expression):
             while elements != []:
                 ubication = elements.index(max(elements)) 
                 value     = elements.pop(ubication)
-                self.alcance.update(self.identifier,value)
+                self.alcance.update(str(self.identifier),value)
                 #Evaluamos las instrucciones
                 self.inst.evaluate()  
 
@@ -636,6 +636,9 @@ class Parenthesis(Expression):
         empilar(self.exp, self.alcance)
         return self.exp.symbolcheck()
 
+    def evaluate(self):
+        return self.exp.evaluate()
+
 # Clase para definir un Conjunto.
 class Set(Expression):
  
@@ -643,6 +646,7 @@ class Set(Expression):
         self.type = 'SET'
         self.list_expr = list_expr
         self.location  = location
+        self.alcance   = tablaSimbolos()
  
     # Para poder ser imprimido por la instruccion print
     def __str__(self):
@@ -659,6 +663,7 @@ class Set(Expression):
             # Un set solo puede contener numeros
             type_set = 'int'
             for exp in self.list_expr:
+                empilar(exp, self.alcance)
                 if type_set != exp.symbolcheck():
                     mensaje = "ERROR: 'set' esperaba un numero entero pero se encontro Variable '" \
                              + exp.symbolcheck() + "' "\
