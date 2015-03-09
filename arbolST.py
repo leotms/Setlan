@@ -701,7 +701,11 @@ class BinaryOperator(Expression):
         'INTERSECTION': interseccion,
         'DIFERENCE'   : diferencia,
         # Mapeo sobre conjuntos
-        'PLUSMAP'  : mapeoSuma
+        'PLUSMAP'  : mapeoSuma,
+        'MINUSMAP' : mapeoResta,
+        'TIMESMAP' : mapeoMultiplicacion,
+        'DIVIDEMAP': mapeoDivision,
+        'MODULEMAP': mapeoModulo
 
     }
  
@@ -744,7 +748,12 @@ class BinaryOperator(Expression):
         leftOp         = self.leftExp.evaluate()
 
         # Aplicamos la operacion indicada y tomamos el resultado.
-        result = evalFunctions[operatorName](leftOp, rigtOp)
+        try:
+            result = evalFunctions[operatorName](leftOp, rigtOp)
+        except Exception as Mensaje:
+            string =  Mensaje.args[0] + locationToString(self.location)
+            print string
+            exit()
         return result
 
 #Clase para los Oeradores Unarios

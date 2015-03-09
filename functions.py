@@ -28,10 +28,14 @@ def multiplicacion(x,y):
 
 # Division entera de dos enteros.
 def division(x,y):
+    if y == 0:
+        raise Exception("\nError: Division por cero ")
     return x//y
 
 # Modulo de la division entera de dos enteros.
 def modulo(x,y):
+    if y == 0:
+        raise Exception("\nError: Division por cero ")
     return x%y
 
 # And logico 
@@ -137,6 +141,50 @@ def mapeoSuma(x,set):
 
     for elem in listaSet:
         listaNewSet.append(suma(x,elem))
+
+    newSet = listaDeEnterosASet(listaNewSet)
+    return newSet
+
+# Retorna el mapeo resta sobre el conjunto
+def mapeoResta(x,set):
+    listaSet = setAListaDeEnteros(set)
+    listaNewSet = []
+
+    for elem in listaSet:
+        listaNewSet.append(resta(elem,x))
+
+    newSet = listaDeEnterosASet(listaNewSet)
+    return newSet
+
+# Retorna el mapeo multiplicacion sobre el conjunto
+def mapeoMultiplicacion(x,set):
+    listaSet = setAListaDeEnteros(set)
+    listaNewSet = []
+
+    for elem in listaSet:
+        listaNewSet.append(multiplicacion(x,elem))
+
+    newSet = listaDeEnterosASet(listaNewSet)
+    return newSet
+
+# Retorna el mapeo division sobre el conjunto
+def mapeoDivision(x,set):
+    listaSet = setAListaDeEnteros(set)
+    listaNewSet = []
+
+    for elem in listaSet:
+        listaNewSet.append(division(elem,x))
+
+    newSet = listaDeEnterosASet(listaNewSet)
+    return newSet
+
+# Retorna el mapeo modulo sobre el conjunto
+def mapeoModulo(x,set):
+    listaSet = setAListaDeEnteros(set)
+    listaNewSet = []
+
+    for elem in listaSet:
+        listaNewSet.append(modulo(elem,x))
 
     newSet = listaDeEnterosASet(listaNewSet)
     return newSet

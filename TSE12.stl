@@ -12,4 +12,29 @@ program {
 	a = {};
 	println "MapeoSuma2 :", x<+>a;
 
+	a = {1,2,3};
+	println "MapeoResta1 :", x<->a;
+
+	# Deberia lanzar numeros negativos (Lo hace!)
+	x = 2;
+	println "MapeoResta2 :", x<->a;	
+
+	x = 1;
+	println "MapeoMult1:", x<*>a;
+
+	x = 2;
+	println "MapeoMult2:", x<*>a;
+
+	a = {};
+	println "MapeoMult2 :", x<*>a;
+
+	a = {2,4,6};
+	println "MapeoDiv1 :", x</>a;
+
+	# Comentado, solo para probar la division por cero
+	#x = 0;
+	#println "MapeoDiv2 :", x</>a;
+
+	println "MapeoModulo1:", x<%>a;
+
 }
