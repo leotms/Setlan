@@ -3,7 +3,7 @@
 
 '''
 Creado el 07/03/2015
-Ult. Modificacion el 07/03/2015
+Ult. Modificacion el 08/03/2015
 
 Este archivo define las funciones necesarias para la ejecucion del 
 lenguaje Setlan.
