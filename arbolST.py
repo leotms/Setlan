@@ -374,8 +374,15 @@ class For(Expression):
         self.inst.symbolcheck() 
 
     def evaluate(self):
-        #Obtenemos los elementos del conjunto a iterar
+        # Obtenemos los elementos del conjunto a iterar
         elements = setAListaDeEnteros(self.expre.evaluate())
+
+        # Si el conjunto es vacio
+        if elements == []:
+            string  = "ERROR: No se puede iterar sobre el conjunto vacio "
+            string += locationToString(self.location)
+            print(string)
+            exit()
 
         #Verificamos el orden del recorrido del conjunto
         if self.direction.evaluate() == 'min':   #Recorrido ascendente
