@@ -1,4 +1,0 @@
-program
-    for i min {4,2,1,2,5} do
-        print i % (5 - i), " "
-
