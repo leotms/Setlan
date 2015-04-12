@@ -1,0 +1,5 @@
+program {
+	using set a; in
+	a = {};
+	for i min a do print i;
+}

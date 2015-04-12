@@ -1,0 +1,18 @@
+program {
+	using
+		set b;
+		bool tengoHambre;
+		int x,y;
+	in
+
+	b = {1,2,3};
+	println "hola, este es un arreglo: ", b;
+	print "Hello, baby :D";
+	println tengoHambre;
+
+	tengoHambre = true;
+	print tengoHambre;
+	x = 12;
+	y = 20;
+	print x + y;
+}
